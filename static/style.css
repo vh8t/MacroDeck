@@ -1,0 +1,62 @@
+:root {
+  /* === Base Colors === */
+  --color-background: #121212; /* Main background */
+  --color-surface: #1e1e1e; /* Cards, panels, modals */
+  --color-popup: #252525; /* Dropdowns, tooltips */
+
+  /* === Button Colors === */
+  --color-button: #007bff; /* Default button */
+  --color-button-hover: #005ecb; /* Hover state */
+  --color-button-active: #0047a6; /* Clicked state */
+  --color-button-disabled: #3a3a3a; /* Disabled button */
+
+  /* === Text Colors === */
+  --color-text-primary: #ffffff; /* Main text */
+  --color-text-secondary: #bbbbbb; /* Less important text */
+  --color-text-disabled: #777777; /* Muted text */
+
+  /* === Border & Shadow Colors === */
+  --color-border: #333333; /* Borders */
+  --color-shadow: rgba(0, 0, 0, 0.3); /* Shadows */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: var(--color-background);
+}
+
+#grid-container {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+}
+
+.grid-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-button);
+  color: var(--color-text-primary);
+  border-radius: 25%;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.grid-button:disabled {
+  background-color: var(--color-button-disabled) !important;
+}
+
+.error {
+  color: #ff5555;
+}

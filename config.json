@@ -1,0 +1,54 @@
+{
+  "size": "2x4",
+  "rotation": "horizontal",
+  "buttons": [
+    {
+      "macro": "volume_up",
+      "text": "Inc",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "volume_down",
+      "text": "Dec",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "volume_set",
+      "text": "Set",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "volume_mute",
+      "text": "Mute",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "volume_unmute",
+      "text": "Unmute",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "volume_toggle",
+      "text": "Toggle",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    }
+  ]
+}

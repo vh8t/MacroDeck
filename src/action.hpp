@@ -1,0 +1,142 @@
+#pragma once
+
+#include "api.hpp"
+#include "opcode.hpp"
+
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <variant>
+#include <vector>
+
+struct Action {
+  Opcode opcode;
+  std::vector<std::variant<int, std::string>> args;
+
+  bool is_int(uint index) const {
+    if (index < args.size()) {
+      return std::holds_alternative<int>(args[index]);
+    }
+    return false;
+  }
+
+  bool is_str(uint index) const {
+    if (index < args.size()) {
+      return std::holds_alternative<std::string>(args[index]);
+    }
+    return false;
+  }
+
+  int i(uint index) const {
+    if (index < args.size()) {
+      return std::get<int>(args[index]);
+    }
+    return 0;
+  }
+
+  std::string s(uint index) const {
+    if (index < args.size()) {
+      return std::get<std::string>(args[index]);
+    }
+    return nullptr;
+  }
+
+  void execute() const {
+    switch (opcode) {
+    case APP_OPEN:
+      break;
+    case APP_CLOSE:
+      break;
+    case APP_SWITCH:
+      break;
+    case KEY_PRESS: {
+      if (args.size() != 1 || is_int(0)) {
+        std::cerr << "Invalid argument for KEY_PRESS" << std::endl;
+        return;
+      }
+      key_press(s(0));
+    } break;
+    case KEY_RELEASE: {
+      if (args.size() != 1 || is_int(0)) {
+        std::cerr << "Invalid argument for KEY_RELEASE" << std::endl;
+        return;
+      }
+      key_release(s(0));
+    } break;
+    case KEY_CLICK: {
+      if (args.size() != 1 || is_int(0)) {
+        std::cerr << "Invalid argument for KEY_CLICK" << std::endl;
+        return;
+      }
+      key_click(s(0));
+    } break;
+    case KEY_TYPE: {
+      if (args.size() != 1 || is_int(0)) {
+        std::cerr << "Invalid argument for KEY_TYPE" << std::endl;
+        return;
+      }
+      key_type(s(0));
+    } break;
+    case MEDIA_PLAY:
+      break;
+    case MEDIA_PAUSE:
+      break;
+    case MEDIA_TOGGLE:
+      break;
+    case MEDIA_NEXT:
+      break;
+    case MEDIA_PREV:
+      break;
+    case VOLUME_INC: {
+      if (args.size() != 1 || is_str(0)) {
+        std::cerr << "Invalid argument for VOLUME_INC" << std::endl;
+        return;
+      }
+      volume_inc(i(0));
+    } break;
+    case VOLUME_DEC: {
+      if (args.size() != 1 || is_str(0)) {
+        std::cerr << "Invalid argument for VOLUME_DEC" << std::endl;
+        return;
+      }
+      volume_dec(i(0));
+    } break;
+    case VOLUME_SET: {
+      if (args.size() != 1 || is_str(0)) {
+        std::cerr << "Invalid argument for VOLUME_SET" << std::endl;
+        return;
+      }
+      volume_set(i(0));
+    } break;
+    case VOLUME_MUTE: {
+      if (args.size() != 0) {
+        std::cerr << "Invalid argument for VOLUME_MUTE" << std::endl;
+        return;
+      }
+      volume_mute();
+    } break;
+    case VOLUME_UNMUTE: {
+      if (args.size() != 0) {
+        std::cerr << "Invalid argument for VOLUME_MUTE" << std::endl;
+        return;
+      }
+      volume_unmute();
+    } break;
+    case VOLUME_TOGGLE: {
+      if (args.size() != 0) {
+        std::cerr << "Invalid argument for VOLUME_MUTE" << std::endl;
+        return;
+      }
+      volume_toggle();
+    } break;
+    case WAIT: {
+      if (args.size() != 1 || is_str(0)) {
+        std::cerr << "Invalid argument for WAIT" << std::endl;
+        return;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(i(0)));
+    } break;
+    }
+  };
+};
