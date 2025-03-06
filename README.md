@@ -14,7 +14,8 @@ MacroDeck is an open-source alternative to Stream Deck. Instead of using a physi
 ### Dependencies
 To compile and run MacroDeck, the following dependencies are required:
 
-- **CMake** (for compiling the source code)
+- **CMake** (for configuring the build system)
+- **Ninja** (for compiling the source code)
 - **libX11** (for X11 window system interaction)
 - **libXtst** (for keyboard emulation and keybinds)
 - **libXKBcommon** (for keyboard extension)

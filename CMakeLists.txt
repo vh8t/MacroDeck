@@ -27,6 +27,6 @@ set(VERSION_TAG "-dev")
 set(PROJECT_FULL_VERSION "${PROJECT_VERSION}${VERSION_TAG}")
 message(STATUS "${PROJECT_NAME} version: ${PROJECT_FULL_VERSION}")
 
-target_link_libraries(MacroPad ${X11_LIBRARIES} Xtst ${ALSA_LIBRARIES} ${CROW_LIBRARIES})
+target_link_libraries(MacroPad ${X11_LIBRARIES} Xtst ${ALSA_LIBRARIES})
 
 # install(TARGETS MacroPad DESTINATION bin)
