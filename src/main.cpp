@@ -6,12 +6,17 @@
 #include "nlohmann/json.hpp"
 #include "opcode.hpp"
 
+#include <arpa/inet.h>
 #include <csignal>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <fstream>
+#include <ifaddrs.h>
 #include <iostream>
+#include <netinet/in.h>
 #include <string>
+#include <sys/types.h>
 #include <unordered_map>
 
 using json = nlohmann::json;
@@ -36,6 +41,30 @@ void sig_handler(int signal) {
 }
 
 int main() {
+  struct ifaddrs *ifaddr;
+  if (getifaddrs(&ifaddr) == -1) {
+    std::cerr << "Failed to get interface addresses" << std::endl;
+    return 1;
+  }
+
+  for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+    if (ifa->ifa_addr == nullptr) {
+      continue;
+    }
+
+    if (ifa->ifa_addr->sa_family == AF_INET) {
+      char ip[INET_ADDRSTRLEN];
+      struct sockaddr_in *addr =
+          reinterpret_cast<struct sockaddr_in *>(ifa->ifa_addr);
+      inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
+
+      std::cout << "Interface: " << ifa->ifa_name << ", IP: " << ip
+                << std::endl;
+    }
+  }
+
+  freeifaddrs(ifaddr);
+
   setup();
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
