@@ -3,6 +3,22 @@
   "rotation": "horizontal",
   "buttons": [
     {
+      "macro": "type",
+      "text": "Type",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
+      "macro": "setup",
+      "text": "Setup",
+      "bg": "#63f",
+      "fg": "#eee",
+      "radius": "10%",
+      "active": "#30c"
+    },
+    {
       "macro": "volume_up",
       "text": "Inc",
       "bg": "#63f",

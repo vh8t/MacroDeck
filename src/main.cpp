@@ -2,6 +2,7 @@
 
 #include "api.hpp"
 #include "crow.h"
+#include "loader.hpp"
 #include "macro.hpp"
 #include "nlohmann/json.hpp"
 #include "opcode.hpp"
@@ -79,6 +80,8 @@ int main() {
       {KEY_CLICK, {"Super+n"}},
   }};
 
+  Macro type = {{{KEY_TYPE, {"https://vh8t.xyz"}}}};
+
   Macro volume_up = {{{VOLUME_INC, {10}}}};
   Macro volume_down = {{{VOLUME_DEC, {10}}}};
   Macro volume_set = {{{VOLUME_SET, {75}}}};
@@ -95,6 +98,7 @@ int main() {
   loaded_macros["volume_mute"] = &volume_mute;
   loaded_macros["volume_unmute"] = &volume_unmute;
   loaded_macros["volume_toggle"] = &volume_toggle;
+  loaded_macros["type"] = &type;
 
   crow::SimpleApp app;
 
@@ -116,19 +120,12 @@ int main() {
           if (data == "get-config") {
             std::cout << "Getting config: " << conn.get_remote_ip()
                       << std::endl;
-            std::ifstream file("config.json");
-            if (!file.is_open()) {
-              conn.send_text("conf-err-1");
-              std::cerr << "Failed to open config" << std::endl;
-              return;
-            }
+            json data = load_config(conn);
 
-            json data;
-            try {
-              file >> data;
-            } catch (const std::exception &e) {
-              conn.send_text("conf-err-2");
-              std::cerr << "Failed to parse json: " << e.what() << std::endl;
+            if (data == nullptr) {
+              std::cerr << "Could not load config, make sure "
+                           "~/.config/macrodec/config.json exists"
+                        << std::endl;
               return;
             }
 
