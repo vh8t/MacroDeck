@@ -21,11 +21,19 @@ socket.onmessage = (e) => {
       createGrid();
     } catch (error) {
       console.error("Failed to parse JSON:", error);
+      displayError("Failed to parse JSON:" + error.toString());
     }
   } else if (message === "conf-err-1") {
-    console.error("Could not open config.json file, make sure it exists");
+    console.error("Could not get home directory");
+    displayError("Could not get home directory");
   } else if (message === "conf-err-2") {
+    console.error("Could not open config.json file, make sure it exists");
+    displayError("Could not open config.json file, make sure it exists");
+  } else if (message === "conf-err-3") {
     console.error(
+      "Could not parse config.json file, make sure there are not errors in it",
+    );
+    displayError(
       "Could not parse config.json file, make sure there are not errors in it",
     );
   }
@@ -82,12 +90,15 @@ function createGrid() {
       : Math.floor(screenWidth * 0.1);
 
   let [rows, cols] = config.size.split("x").map(Number);
+  let flipped = false;
 
   if ("rotation" in config) {
     if (config.rotation === "horizontal" && screenHeight > screenWidth) {
       [cols, rows] = config.size.split("x").map(Number);
+      flipped = true;
     } else if (config.rotation == "vertical" && screenWidth > screenHeight) {
       [cols, rows] = config.size.split("x").map(Number);
+      flipped = true;
     }
   }
 
@@ -104,6 +115,14 @@ function createGrid() {
 
   const loopLen = Math.min(config.buttons.length, rows * cols);
   for (let i = 0; i < loopLen; i++) {
+    let index = i;
+    if (flipped) {
+      // index = (i % cols) * rows + (rows - 1 - Math.floor(i / cols));
+      index = (cols - 1 - (i % cols)) * rows + Math.floor(i / cols);
+    }
+
+    const btn = config.buttons[index];
+
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
 
@@ -113,12 +132,12 @@ function createGrid() {
     const button = document.createElement("button");
     button.classList.add("grid-button");
     button.setAttribute("data-id", `button-${i}`);
-    button.setAttribute("data-macro", config.buttons[i].macro);
+    button.setAttribute("data-macro", btn.macro);
 
-    if ("text" in config.buttons[i]) {
-      button.textContent = config.buttons[i].text;
+    if ("text" in btn) {
+      button.textContent = btn.text;
     } else {
-      button.textContent = config.buttons[i].macro;
+      button.textContent = btn.macro;
     }
 
     button.style.width = `${squareSize}px`;
@@ -129,25 +148,25 @@ function createGrid() {
     let radius = "25%";
     let active = "#0047a6";
 
-    if ("fg" in config.buttons[i]) {
-      fg = config.buttons[i].fg;
+    if ("fg" in btn) {
+      fg = btn.fg;
     }
 
-    if ("bg" in config.buttons[i]) {
-      bg = config.buttons[i].bg;
+    if ("bg" in btn) {
+      bg = btn.bg;
     }
 
-    if ("radius" in config.buttons[i]) {
-      radius = config.buttons[i].radius;
+    if ("radius" in btn) {
+      radius = btn.radius;
     }
 
-    if ("active" in config.buttons[i]) {
-      active = config.buttons[i].active;
+    if ("active" in btn) {
+      active = btn.active;
     }
 
     button.style.color = fg;
-    button.style.backgroundColor = config.buttons[i].bg;
-    button.style.borderRadius = config.buttons[i].radius;
+    button.style.backgroundColor = btn.bg;
+    button.style.borderRadius = btn.radius;
     button.onmousedown = () => {
       button.style.backgroundColor = active;
     };
