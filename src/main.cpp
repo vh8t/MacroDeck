@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "crow.h"
 #include "loader.hpp"
+#include "log.hpp"
 #include "macro.hpp"
 #include "nlohmann/json.hpp"
 #include "opcode.hpp"
@@ -22,18 +23,26 @@
 
 using json = nlohmann::json;
 
+std::unordered_map<std::string, Macro *> loaded_macros;
+
 void setup() {
-  std::cout << "Initializing X11 display" << std::endl;
+  md_log("Initializing X11 display");
   init_x11();
-  std::cout << "Initializing master volume control" << std::endl;
+  md_log("Initializing master volume control");
   init_alsa();
 }
 
 void cleanup() {
-  std::cout << "Cleaning X11 display" << std::endl;
+  md_log("Cleaning X11 display");
   clean_x11();
-  std::cout << "Cleaning master volume control" << std::endl;
+  md_log("Cleaning master volume control");
   clean_alsa();
+
+  for (auto &[name, macro] : loaded_macros) {
+    md_log("Deallocating macro: " + name);
+    delete macro;
+  }
+  loaded_macros.clear();
 }
 
 void sig_handler(int signal) {
@@ -44,7 +53,7 @@ void sig_handler(int signal) {
 int main() {
   struct ifaddrs *ifaddr;
   if (getifaddrs(&ifaddr) == -1) {
-    std::cerr << "Failed to get interface addresses" << std::endl;
+    md_error("Failed to get interface addresses");
     return 1;
   }
 
@@ -59,8 +68,9 @@ int main() {
           reinterpret_cast<struct sockaddr_in *>(ifa->ifa_addr);
       inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
 
-      std::cout << "Interface: " << ifa->ifa_name << ", IP: " << ip
-                << std::endl;
+      // std::cout << "Interface: " << ifa->ifa_name << ", IP: " << ip
+      //           << std::endl;
+      md_log(std::string("Interface: ") + ifa->ifa_name + ", IP: " + ip);
     }
   }
 
@@ -70,76 +80,63 @@ int main() {
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
 
-  Macro setup = {{
-      {KEY_CLICK, {"Super+3"}},
-      {WAIT, {100}},
-      {KEY_CLICK, {"Super+Return"}},
-      {WAIT, {100}},
-      {KEY_CLICK, {"Super+4"}},
-      {WAIT, {100}},
-      {KEY_CLICK, {"Super+n"}},
-  }};
+  md_log("Getting config");
+  json config = load_config();
 
-  Macro type = {{{KEY_TYPE, {"https://vh8t.xyz"}}}};
+  if (config == nullptr) {
+    md_error("Could not load config from '~/.config/macrodeck/config.json'");
+    return -1;
+  }
 
-  Macro volume_up = {{{VOLUME_INC, {10}}}};
-  Macro volume_down = {{{VOLUME_DEC, {10}}}};
-  Macro volume_set = {{{VOLUME_SET, {75}}}};
-  Macro volume_mute = {{{VOLUME_MUTE, {}}}};
-  Macro volume_unmute = {{{VOLUME_UNMUTE, {}}}};
-  Macro volume_toggle = {{{VOLUME_TOGGLE, {}}}};
+  if (config.contains("buttons") && config["buttons"].is_array()) {
+    for (const auto &button : config["buttons"]) {
+      if (!button.is_object()) {
+        md_warn("Invalid button format");
+        continue;
+      }
 
-  std::unordered_map<std::string, Macro *> loaded_macros;
+      if (button.contains("macro") && button["macro"].is_string()) {
+        std::string macro_name = button["macro"].get<std::string>();
 
-  loaded_macros["setup"] = &setup;
-  loaded_macros["volume_up"] = &volume_up;
-  loaded_macros["volume_down"] = &volume_down;
-  loaded_macros["volume_set"] = &volume_set;
-  loaded_macros["volume_mute"] = &volume_mute;
-  loaded_macros["volume_unmute"] = &volume_unmute;
-  loaded_macros["volume_toggle"] = &volume_toggle;
-  loaded_macros["type"] = &type;
+        Macro *macro = load_macro(macro_name);
+        if (macro) {
+          md_log("Loaded macro: " + macro_name);
+          loaded_macros[macro_name] = macro;
+        } else {
+          md_warn("Failed to load macro: " + macro_name);
+        }
+      }
+    }
+  }
 
   crow::SimpleApp app;
 
   CROW_WEBSOCKET_ROUTE(app, "/ws")
       .onopen([&](crow::websocket::connection &conn) {
-        std::cout << "Opened connection with: " << conn.get_remote_ip()
-                  << std::endl;
+        md_log("Opened connection with: " + conn.get_remote_ip());
       })
 
       .onclose([&](crow::websocket::connection &conn, const std::string &reason,
                    uint16_t) {
-        std::cout << "Closed connection with: " << conn.get_remote_ip()
-                  << " with reason: " << reason << std::endl;
+        md_log("Closed connection with: " + conn.get_remote_ip() +
+               " with reason: " + reason);
       })
 
       .onmessage([&](crow::websocket::connection &conn, const std::string &data,
                      bool is_binary) {
         if (!is_binary) {
           if (data == "get-config") {
-            std::cout << "Getting config: " << conn.get_remote_ip()
-                      << std::endl;
-            json data = load_config(conn);
-
-            if (data == nullptr) {
-              std::cerr << "Could not load config, make sure "
-                           "~/.config/macrodec/config.json exists"
-                        << std::endl;
-              return;
-            }
-
-            std::string jsonString = data.dump();
+            std::string jsonString = config.dump();
             conn.send_text("config:" + jsonString);
           } else if (data.length() > 10 &&
                      data.compare(0, 10, "run-macro:") == 0) {
             std::string macro_name = data.substr(10);
 
             if (loaded_macros.find(macro_name) != loaded_macros.end()) {
-              std::cout << "Running: " << macro_name << std::endl;
+              md_log("Running macro: " + macro_name);
               loaded_macros[macro_name]->run();
             } else {
-              std::cerr << "Invalid macro: " << macro_name << std::endl;
+              md_error("Invalid macro: " + macro_name);
             }
           }
         }

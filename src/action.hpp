@@ -14,6 +14,10 @@ struct Action {
   Opcode opcode;
   std::vector<std::variant<int, std::string>> args;
 
+  Action(Opcode op) : opcode(op) {}
+  Action(Opcode op, std::vector<std::variant<int, std::string>> args)
+      : opcode(op), args(args) {}
+
   bool is_int(uint index) const {
     if (index < args.size()) {
       return std::holds_alternative<int>(args[index]);
@@ -44,6 +48,8 @@ struct Action {
 
   void execute() const {
     switch (opcode) {
+    case NOP:
+      break;
     case APP_OPEN:
       break;
     case APP_CLOSE:

@@ -23,19 +23,6 @@ socket.onmessage = (e) => {
       console.error("Failed to parse JSON:", error);
       displayError("Failed to parse JSON:" + error.toString());
     }
-  } else if (message === "conf-err-1") {
-    console.error("Could not get home directory");
-    displayError("Could not get home directory");
-  } else if (message === "conf-err-2") {
-    console.error("Could not open config.json file, make sure it exists");
-    displayError("Could not open config.json file, make sure it exists");
-  } else if (message === "conf-err-3") {
-    console.error(
-      "Could not parse config.json file, make sure there are not errors in it",
-    );
-    displayError(
-      "Could not parse config.json file, make sure there are not errors in it",
-    );
   }
 };
 

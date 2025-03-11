@@ -8,7 +8,7 @@ struct Macro {
   std::vector<Action> macro;
 
   void run() const {
-    for (auto action : macro) {
+    for (const auto &action : macro) {
       action.execute();
     }
   }

@@ -1,6 +1,10 @@
 #pragma once
 
+#include <string>
+
 enum Opcode {
+  NOP,
+
   // Application Control
   APP_OPEN,
   APP_CLOSE,
@@ -29,3 +33,5 @@ enum Opcode {
 
   WAIT,
 };
+
+Opcode str_to_op(std::string str);

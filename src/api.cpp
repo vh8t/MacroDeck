@@ -1,4 +1,5 @@
 #include "api.hpp"
+#include "log.hpp"
 
 #include <X11/X.h>
 #include <X11/XF86keysym.h>
@@ -47,7 +48,7 @@ std::unordered_map<char, KeySym> special_char_map = {
 
 void simulate_key_press(KeySym key_sym) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
@@ -59,7 +60,7 @@ void simulate_key_press(KeySym key_sym) {
 
 void simulate_key_release(KeySym key_sym) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
@@ -72,7 +73,7 @@ void simulate_key_release(KeySym key_sym) {
 void init_x11() {
   display = XOpenDisplay(nullptr);
   if (!display) {
-    std::cerr << "Unable to open X display!" << std::endl;
+    md_error("Unable to open X display");
   }
 }
 
@@ -94,7 +95,7 @@ void init_alsa() {
 
   elem = snd_mixer_find_selem(mixer, sid);
   if (!elem) {
-    std::cerr << "Unable to find master volume control" << std::endl;
+    md_error("Unable to find master volume control");
   }
 }
 
@@ -106,7 +107,7 @@ void clean_alsa() {
 
 void key_press(const std::string &combination) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
@@ -119,7 +120,7 @@ void key_press(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    std::cerr << "Invalid key combination" << std::endl;
+    md_error("Invalid key combination: " + combination);
     return;
   }
 
@@ -128,7 +129,7 @@ void key_press(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_press(modifier_map[modifier]);
     } else {
-      std::cerr << "Unknown modifier: " << modifier << std::endl;
+      md_error("Unknown modifier: " + modifier);
     }
   }
 
@@ -136,7 +137,7 @@ void key_press(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    std::cerr << "Unknown key: " << main_key << std::endl;
+    md_error("Unknown key: " + main_key);
   } else {
     simulate_key_press(main_key_sym);
   }
@@ -144,7 +145,7 @@ void key_press(const std::string &combination) {
 
 void key_release(const std::string &combination) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
@@ -157,7 +158,7 @@ void key_release(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    std::cerr << "Invalid key combination" << std::endl;
+    md_error("Invalid key combination: " + combination);
     return;
   }
 
@@ -166,7 +167,7 @@ void key_release(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_release(modifier_map[modifier]);
     } else {
-      std::cerr << "Unknown modifier: " << modifier << std::endl;
+      md_error("Unknown modifier: " + modifier);
     }
   }
 
@@ -174,7 +175,7 @@ void key_release(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    std::cerr << "Unknown key: " << main_key << std::endl;
+    md_error("Unknown key: " + main_key);
   } else {
     simulate_key_release(main_key_sym);
   }
@@ -182,7 +183,7 @@ void key_release(const std::string &combination) {
 
 void key_click(const std::string &combination) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
@@ -195,7 +196,7 @@ void key_click(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    std::cerr << "Invalid key combination" << std::endl;
+    md_error("Invalid key combination: " + combination);
     return;
   }
 
@@ -204,7 +205,7 @@ void key_click(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_press(modifier_map[modifier]);
     } else {
-      std::cerr << "Unknown modifier: " << modifier << std::endl;
+      md_error("Unknown modifier: " + modifier);
     }
   }
 
@@ -212,7 +213,7 @@ void key_click(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    std::cerr << "Unknown key: " << main_key << std::endl;
+    md_error("Unknown key: " + main_key);
   } else {
     simulate_key_press(main_key_sym);
     simulate_key_release(main_key_sym);
@@ -223,26 +224,26 @@ void key_click(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_release(modifier_map[modifier]);
     } else {
-      std::cerr << "Unknown modifier: " << modifier << std::endl;
+      md_error("Unknown modifier: " + modifier);
     }
   }
 }
 
 void key_type(const std::string &text) {
   if (!display) {
-    std::cerr << "Display is not initialized!" << std::endl;
+    md_error("Display is not initialized");
     return;
   }
 
   if (text.empty()) {
-    std::cerr << "Invalid key combination" << std::endl;
+    md_error("Invalid text: " + text);
     return;
   }
 
   int xkb_event_type;
   if (!XkbQueryExtension(display, nullptr, &xkb_event_type, nullptr, nullptr,
                          nullptr)) {
-    std::cerr << "Xkb extension not available" << std::endl;
+    md_error("Xkb extension not available");
     return;
   }
 
@@ -259,7 +260,7 @@ void key_type(const std::string &text) {
     }
 
     if (key_sym == NoSymbol) {
-      std::cerr << "Unknown key: " << ch << std::endl;
+      md_error("Unknown key: " + std::string(1, ch));
     } else {
       bool shift = false;
       KeySym lower_sym =
@@ -287,7 +288,7 @@ void key_type(const std::string &text) {
 
 void volume_inc(int amount) {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 
@@ -308,7 +309,7 @@ void volume_inc(int amount) {
 
 void volume_dec(int amount) {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 
@@ -329,7 +330,7 @@ void volume_dec(int amount) {
 
 void volume_set(int amount) {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 
@@ -345,7 +346,7 @@ void volume_set(int amount) {
 
 void volume_mute() {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 
@@ -354,7 +355,7 @@ void volume_mute() {
 
 void volume_unmute() {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 
@@ -363,7 +364,7 @@ void volume_unmute() {
 
 void volume_toggle() {
   if (!elem) {
-    std::cerr << "Master volume control is not initialized!" << std::endl;
+    md_error("Master volume control is not initialized");
     return;
   }
 

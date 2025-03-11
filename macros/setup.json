@@ -1,0 +1,12 @@
+{
+  "author": "vh8t",
+  "macro": [
+    ["key_click", "Super+3"],
+    ["wait", 100],
+    ["key_click", "Super+Return"],
+    ["wait", 100],
+    ["key_click", "Super+4"],
+    ["wait", 100],
+    ["key_click", "Super+n"]
+  ]
+}
