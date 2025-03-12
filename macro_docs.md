@@ -111,3 +111,7 @@ Below is an example of a macro named `example_macro.json`
 18. `volume_toggle`
     - **Usage**: `["volume_toggle"]`
     - Toggles the sound output.
+
+19. `wait`
+    - **Usage**: `["wait", <milliseconds>]`
+    - Wait for set milliseconds
