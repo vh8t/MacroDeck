@@ -54,6 +54,8 @@ ninja
 ## Usage
 Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
 
+Macro documentation: [DOCS](macro_docs.md)
+
 ## Future Plans
 - Expand support to **Wayland**
 - Add compatibility with **Windows**
