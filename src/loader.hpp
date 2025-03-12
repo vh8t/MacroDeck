@@ -1,11 +1,12 @@
 #pragma once
 
-#include <string>
 #define CROW_USE_BOOST 1
 
 #include "crow.h"
 #include "macro.hpp"
 #include "nlohmann/json.hpp"
+
+#include <string>
 
 using json = nlohmann::json;
 

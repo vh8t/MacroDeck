@@ -1,21 +1,16 @@
 #define CROW_USE_BOOST 1
 
 #include "api.hpp"
-#include "crow.h"
 #include "loader.hpp"
 #include "log.hpp"
 #include "macro.hpp"
 #include "nlohmann/json.hpp"
-#include "opcode.hpp"
 
 #include <arpa/inet.h>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
-#include <exception>
-#include <fstream>
 #include <ifaddrs.h>
-#include <iostream>
 #include <netinet/in.h>
 #include <string>
 #include <sys/types.h>
@@ -68,8 +63,6 @@ int main() {
           reinterpret_cast<struct sockaddr_in *>(ifa->ifa_addr);
       inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
 
-      // std::cout << "Interface: " << ifa->ifa_name << ", IP: " << ip
-      //           << std::endl;
       md_log(std::string("Interface: ") + ifa->ifa_name + ", IP: " + ip);
     }
   }

@@ -10,11 +10,10 @@
 #include <algorithm>
 #include <alsa/asoundlib.h>
 #include <cmath>
-#include <iostream>
+#include <cstring>
 #include <sstream>
-#include <string>
+#include <sys/wait.h>
 #include <unordered_map>
-#include <vector>
 
 Display *display = nullptr;
 snd_mixer_t *mixer = nullptr;
@@ -45,6 +44,48 @@ std::unordered_map<char, KeySym> special_char_map = {
     {'`', XK_grave},        {'{', XK_braceleft},   {'|', XK_bar},
     {'}', XK_braceright},   {'~', XK_asciitilde},  {'\n', XK_Return},
     {'\t', XK_Tab},         {' ', XK_space}};
+
+Window find_window(const std::string &app) {
+  if (!display) {
+    md_error("Display is not initialized");
+    return 0;
+  }
+
+  Window root = DefaultRootWindow(display);
+  Window parent;
+  Window *children;
+  uint nchildren;
+
+  if (XQueryTree(display, root, &root, &parent, &children, &nchildren) == 0) {
+    return 0;
+  }
+
+  Atom atom = XInternAtom(display, "WM_CLASS", True);
+
+  for (uint i = 0; i < nchildren; i++) {
+    char *prop = nullptr;
+    Atom actual_type;
+    int actual_format;
+    ulong nitems, bytes_after;
+    unsigned char *prop_return = nullptr;
+
+    if (XGetWindowProperty(display, children[i], atom, 0, 1024, False,
+                           AnyPropertyType, &actual_type, &actual_format,
+                           &nitems, &bytes_after, &prop_return) == Success &&
+        prop_return) {
+      prop = reinterpret_cast<char *>(prop_return);
+
+      if (prop && std::strstr(prop, app.c_str())) {
+        XFree(prop);
+        return children[i];
+      }
+
+      XFree(prop);
+    }
+  }
+
+  return 0;
+}
 
 void simulate_key_press(KeySym key_sym) {
   if (!display) {
@@ -102,6 +143,95 @@ void init_alsa() {
 void clean_alsa() {
   if (mixer) {
     snd_mixer_close(mixer);
+  }
+}
+
+void app_open(const std::string &name, const std::vector<std::string> &args) {
+  pid_t pid = fork();
+  if (pid == -1) {
+    md_error(std::string("Failed to fork process") + strerror(errno));
+    return;
+  }
+
+  if (pid == 0) {
+    std::vector<const char *> c_args = {name.c_str()};
+
+    for (const auto &arg : args) {
+      c_args.push_back(arg.c_str());
+    }
+    c_args.push_back(nullptr);
+
+    execvp(c_args[0], const_cast<char *const *>(c_args.data()));
+
+    md_error("Failed to execute" + name + ": " + strerror(errno));
+    exit(1);
+  } else {
+    int status;
+    waitpid(pid, &status, WNOHANG);
+  }
+  return;
+
+  if (fork() == 0) {
+    std::vector<const char *> c_args;
+    c_args.push_back(name.c_str());
+
+    for (const auto &arg : args) {
+      c_args.push_back(arg.c_str());
+    }
+    c_args.push_back(nullptr);
+
+    execvp(c_args[0], const_cast<char *const *>(c_args.data()));
+
+    md_error("Failed to execute: " + name + strerror(errno));
+    exit(1);
+  } else {
+    md_error("Failed to fork process");
+  }
+}
+
+void app_close(const std::string &name) {
+  pid_t pid = fork();
+  if (pid == -1) {
+    md_error(std::string("Failed to fork process") + strerror(errno));
+    return;
+  }
+
+  if (pid == 0) {
+    md_log("Executing: xdotool search --class '" + name + "' windowclose");
+
+    std::vector<const char *> args = {"xdotool",    "search",      "--class",
+                                      name.c_str(), "windowclose", nullptr};
+
+    execvp("xdotool", const_cast<char *const *>(args.data()));
+
+    md_error(std::string("Failed to execute xdotool: ") + strerror(errno));
+    exit(1);
+  } else {
+    int status;
+    waitpid(pid, &status, WNOHANG);
+  }
+}
+
+void app_switch(const std::string &name) {
+  pid_t pid = fork();
+  if (pid == -1) {
+    md_error(std::string("Failed to fork process") + strerror(errno));
+    return;
+  }
+
+  if (pid == 0) {
+    md_log("Executing: xdotool search --class '" + name + "' windowfocus");
+
+    std::vector<const char *> args = {"xdotool",    "search",      "--class",
+                                      name.c_str(), "windowfocus", nullptr};
+
+    execvp("xdotool", const_cast<char *const *>(args.data()));
+
+    md_error(std::string("Failed to execute xdotool: ") + strerror(errno));
+    exit(1);
+  } else {
+    int status;
+    waitpid(pid, &status, WNOHANG);
   }
 }
 

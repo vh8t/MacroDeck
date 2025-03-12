@@ -103,10 +103,10 @@ function createGrid() {
   const loopLen = Math.min(config.buttons.length, rows * cols);
   for (let i = 0; i < loopLen; i++) {
     let index = i;
-    if (flipped) {
-      // index = (i % cols) * rows + (rows - 1 - Math.floor(i / cols));
-      index = (cols - 1 - (i % cols)) * rows + Math.floor(i / cols);
-    }
+    // if (flipped) {
+    //   // index = (i % cols) * rows + (rows - 1 - Math.floor(i / cols));
+    //   index = (cols - 1 - (i % cols)) * rows + Math.floor(i / cols);
+    // }
 
     const btn = config.buttons[index];
 

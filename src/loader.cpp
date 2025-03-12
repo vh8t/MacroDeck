@@ -7,7 +7,6 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <pwd.h>
 #include <stdexcept>
 #include <string>

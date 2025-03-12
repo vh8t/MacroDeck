@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 void init_x11();   // implemented
 void clean_x11();  // implemented
 void init_alsa();  // implemented
 void clean_alsa(); // implemented
 
-void app_open(const std::string &name);   //
-void app_close(const std::string &name);  //
-void app_switch(const std::string &name); //
+void app_open(const std::string &name, const std::vector<std::string> &args); //
+void app_close(const std::string &name);                                      //
+void app_switch(const std::string &name);                                     //
 
 void key_press(const std::string &combination);   // implemented
 void key_release(const std::string &combination); // implemented
