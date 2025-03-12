@@ -2,7 +2,6 @@
 #include "log.hpp"
 #include "opcode.hpp"
 
-#include <boost/asio/config.hpp>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
