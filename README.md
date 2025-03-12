@@ -26,8 +26,15 @@ To compile and run MacroDeck, the following dependencies are required:
 
 ### Building from source
 #### Installing libraries
+
+Arch:
 ```sh
 pacman -S libx11 libxtst libxkbcommon alsa-lib boost
+```
+
+Ubuntu:
+```sh 
+apt install libx11-dev libxtst-dev libxkbcommon0 libacound2t64 libboost-all-dev
 ```
 
 #### Compiling source code
