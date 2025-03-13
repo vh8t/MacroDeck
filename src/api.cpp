@@ -47,7 +47,7 @@ std::unordered_map<char, KeySym> special_char_map = {
 
 Window find_window(const std::string &app) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return 0;
   }
 
@@ -89,7 +89,7 @@ Window find_window(const std::string &app) {
 
 void simulate_key_press(KeySym key_sym) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
@@ -101,7 +101,7 @@ void simulate_key_press(KeySym key_sym) {
 
 void simulate_key_release(KeySym key_sym) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
@@ -114,7 +114,7 @@ void simulate_key_release(KeySym key_sym) {
 void init_x11() {
   display = XOpenDisplay(nullptr);
   if (!display) {
-    md_error("Unable to open X display");
+    error("Unable to open X display");
   }
 }
 
@@ -136,7 +136,7 @@ void init_alsa() {
 
   elem = snd_mixer_find_selem(mixer, sid);
   if (!elem) {
-    md_error("Unable to find master volume control");
+    error("Unable to find master volume control");
   }
 }
 
@@ -149,7 +149,7 @@ void clean_alsa() {
 void app_open(const std::string &name, const std::vector<std::string> &args) {
   pid_t pid = fork();
   if (pid == -1) {
-    md_error(std::string("Failed to fork process") + strerror(errno));
+    error(std::string("Failed to fork process") + strerror(errno));
     return;
   }
 
@@ -163,7 +163,7 @@ void app_open(const std::string &name, const std::vector<std::string> &args) {
 
     execvp(c_args[0], const_cast<char *const *>(c_args.data()));
 
-    md_error("Failed to execute" + name + ": " + strerror(errno));
+    error("Failed to execute" + name + ": " + strerror(errno));
     exit(1);
   } else {
     int status;
@@ -182,29 +182,29 @@ void app_open(const std::string &name, const std::vector<std::string> &args) {
 
     execvp(c_args[0], const_cast<char *const *>(c_args.data()));
 
-    md_error("Failed to execute: " + name + strerror(errno));
+    error("Failed to execute: " + name + strerror(errno));
     exit(1);
   } else {
-    md_error("Failed to fork process");
+    error("Failed to fork process");
   }
 }
 
 void app_close(const std::string &name) {
   pid_t pid = fork();
   if (pid == -1) {
-    md_error(std::string("Failed to fork process") + strerror(errno));
+    error(std::string("Failed to fork process") + strerror(errno));
     return;
   }
 
   if (pid == 0) {
-    md_log("Executing: xdotool search --class '" + name + "' windowclose");
+    log("Executing: xdotool search --class '" + name + "' windowclose");
 
     std::vector<const char *> args = {"xdotool",    "search",      "--class",
                                       name.c_str(), "windowclose", nullptr};
 
     execvp("xdotool", const_cast<char *const *>(args.data()));
 
-    md_error(std::string("Failed to execute xdotool: ") + strerror(errno));
+    error(std::string("Failed to execute xdotool: ") + strerror(errno));
     exit(1);
   } else {
     int status;
@@ -215,19 +215,19 @@ void app_close(const std::string &name) {
 void app_switch(const std::string &name) {
   pid_t pid = fork();
   if (pid == -1) {
-    md_error(std::string("Failed to fork process") + strerror(errno));
+    error(std::string("Failed to fork process") + strerror(errno));
     return;
   }
 
   if (pid == 0) {
-    md_log("Executing: xdotool search --class '" + name + "' windowfocus");
+    log("Executing: xdotool search --class '" + name + "' windowfocus");
 
     std::vector<const char *> args = {"xdotool",    "search",      "--class",
                                       name.c_str(), "windowfocus", nullptr};
 
     execvp("xdotool", const_cast<char *const *>(args.data()));
 
-    md_error(std::string("Failed to execute xdotool: ") + strerror(errno));
+    error(std::string("Failed to execute xdotool: ") + strerror(errno));
     exit(1);
   } else {
     int status;
@@ -237,7 +237,7 @@ void app_switch(const std::string &name) {
 
 void key_press(const std::string &combination) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
@@ -250,7 +250,7 @@ void key_press(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    md_error("Invalid key combination: " + combination);
+    error("Invalid key combination: " + combination);
     return;
   }
 
@@ -259,7 +259,7 @@ void key_press(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_press(modifier_map[modifier]);
     } else {
-      md_error("Unknown modifier: " + modifier);
+      error("Unknown modifier: " + modifier);
     }
   }
 
@@ -267,7 +267,7 @@ void key_press(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    md_error("Unknown key: " + main_key);
+    error("Unknown key: " + main_key);
   } else {
     simulate_key_press(main_key_sym);
   }
@@ -275,7 +275,7 @@ void key_press(const std::string &combination) {
 
 void key_release(const std::string &combination) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
@@ -288,7 +288,7 @@ void key_release(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    md_error("Invalid key combination: " + combination);
+    error("Invalid key combination: " + combination);
     return;
   }
 
@@ -297,7 +297,7 @@ void key_release(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_release(modifier_map[modifier]);
     } else {
-      md_error("Unknown modifier: " + modifier);
+      error("Unknown modifier: " + modifier);
     }
   }
 
@@ -305,7 +305,7 @@ void key_release(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    md_error("Unknown key: " + main_key);
+    error("Unknown key: " + main_key);
   } else {
     simulate_key_release(main_key_sym);
   }
@@ -313,7 +313,7 @@ void key_release(const std::string &combination) {
 
 void key_click(const std::string &combination) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
@@ -326,7 +326,7 @@ void key_click(const std::string &combination) {
   }
 
   if (tokens.empty()) {
-    md_error("Invalid key combination: " + combination);
+    error("Invalid key combination: " + combination);
     return;
   }
 
@@ -335,7 +335,7 @@ void key_click(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_press(modifier_map[modifier]);
     } else {
-      md_error("Unknown modifier: " + modifier);
+      error("Unknown modifier: " + modifier);
     }
   }
 
@@ -343,7 +343,7 @@ void key_click(const std::string &combination) {
   KeySym main_key_sym = XStringToKeysym(main_key.c_str());
 
   if (main_key_sym == NoSymbol) {
-    md_error("Unknown key: " + main_key);
+    error("Unknown key: " + main_key);
   } else {
     simulate_key_press(main_key_sym);
     simulate_key_release(main_key_sym);
@@ -354,26 +354,26 @@ void key_click(const std::string &combination) {
     if (modifier_map.find(modifier) != modifier_map.end()) {
       simulate_key_release(modifier_map[modifier]);
     } else {
-      md_error("Unknown modifier: " + modifier);
+      error("Unknown modifier: " + modifier);
     }
   }
 }
 
 void key_type(const std::string &text) {
   if (!display) {
-    md_error("Display is not initialized");
+    error("Display is not initialized");
     return;
   }
 
   if (text.empty()) {
-    md_error("Invalid text: " + text);
+    error("Invalid text: " + text);
     return;
   }
 
   int xkb_event_type;
   if (!XkbQueryExtension(display, nullptr, &xkb_event_type, nullptr, nullptr,
                          nullptr)) {
-    md_error("Xkb extension not available");
+    error("Xkb extension not available");
     return;
   }
 
@@ -390,7 +390,7 @@ void key_type(const std::string &text) {
     }
 
     if (key_sym == NoSymbol) {
-      md_error("Unknown key: " + std::string(1, ch));
+      error("Unknown key: " + std::string(1, ch));
     } else {
       bool shift = false;
       KeySym lower_sym =
@@ -418,7 +418,7 @@ void key_type(const std::string &text) {
 
 void volume_inc(int amount) {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 
@@ -439,7 +439,7 @@ void volume_inc(int amount) {
 
 void volume_dec(int amount) {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 
@@ -460,7 +460,7 @@ void volume_dec(int amount) {
 
 void volume_set(int amount) {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 
@@ -476,7 +476,7 @@ void volume_set(int amount) {
 
 void volume_mute() {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 
@@ -485,7 +485,7 @@ void volume_mute() {
 
 void volume_unmute() {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 
@@ -494,7 +494,7 @@ void volume_unmute() {
 
 void volume_toggle() {
   if (!elem) {
-    md_error("Master volume control is not initialized");
+    error("Master volume control is not initialized");
     return;
   }
 

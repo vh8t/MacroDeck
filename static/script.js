@@ -102,13 +102,7 @@ function createGrid() {
 
   const loopLen = Math.min(config.buttons.length, rows * cols);
   for (let i = 0; i < loopLen; i++) {
-    let index = i;
-    // if (flipped) {
-    //   // index = (i % cols) * rows + (rows - 1 - Math.floor(i / cols));
-    //   index = (cols - 1 - (i % cols)) * rows + Math.floor(i / cols);
-    // }
-
-    const btn = config.buttons[index];
+    const btn = config.buttons[i];
 
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
@@ -127,8 +121,14 @@ function createGrid() {
       button.textContent = btn.macro;
     }
 
-    button.style.width = `${squareSize}px`;
-    button.style.height = `${squareSize}px`;
+    if ("scale" in btn && typeof btn.scale === "number") {
+      console.log(typeof btn.scale);
+      button.style.width = `${Math.round(squareSize * btn.scale)}px`;
+      button.style.height = `${Math.round(squareSize * btn.scale)}px`;
+    } else {
+      button.style.width = `${squareSize}px`;
+      button.style.height = `${squareSize}px`;
+    }
 
     let fg = "#ffffff";
     let bg = "#007bff";

@@ -19,7 +19,8 @@ The `config.json` file must follow this format:
       "bg": "<button background hex>",
       "fg": "<button foreground hex>",
       "radius": "<button corner radius in % or px>",
-      "active": "<button active background hex>"
+      "active": "<button active background hex>",
+      "scale": <button scale>,
     }
   ]
 }
@@ -39,6 +40,7 @@ The `config.json` file must follow this format:
 - `fg` (optional): The foreground (text) color of the button in hex format.
 - `radius` (optional): The corner radius of the button. Can be specified in pixels (`px`) or percentage (`%`).
 - `active` (optional): The background color of the button when active (pressed or selected).
+- `scale` (optional): The scale of the button as float or number.
 
 
 ## Grid Behavior
@@ -58,7 +60,8 @@ The `config.json` file must follow this format:
       "bg": "#3498db",
       "fg": "#ffffff",
       "radius": "10px",
-      "active": "#2980b9"
+      "active": "#2980b9",
+      "scale": 1.5
     },
     {
       "macro": "open_terminal",

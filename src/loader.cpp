@@ -32,20 +32,20 @@ json load_config() {
   try {
     home_dir = get_home_dir();
   } catch (const std::exception &e) {
-    md_error(e.what());
+    error(e.what());
     return nullptr;
   }
 
   fs::path config_path = fs::path(home_dir) / ".config/macrodeck/config.json";
 
   if (!fs::exists(config_path)) {
-    md_error("Failed to open config");
+    error("Failed to open config");
     return nullptr;
   }
 
   std::ifstream file(config_path);
   if (!file.is_open()) {
-    md_error("Failed to open config");
+    error("Failed to open config");
     return nullptr;
   }
 
@@ -53,7 +53,7 @@ json load_config() {
   try {
     file >> data;
   } catch (const std::exception &e) {
-    md_error(std::string("Failed to parse json: ") + e.what());
+    error(std::string("Failed to parse json: ") + e.what());
     return nullptr;
   }
 
@@ -65,7 +65,7 @@ Macro *load_macro(const std::string &name) {
   try {
     home_dir = get_home_dir();
   } catch (const std::exception &e) {
-    md_error(e.what());
+    error(e.what());
     return nullptr;
   }
 
@@ -73,13 +73,13 @@ Macro *load_macro(const std::string &name) {
       fs::path(home_dir) / ".config/macrodeck/macros/" / (name + ".json");
 
   if (!fs::exists(macro_path)) {
-    md_error("Failed to load macro: " + name);
+    error("Failed to load macro: " + name);
     return nullptr;
   }
 
   std::ifstream file(macro_path);
   if (!file.is_open()) {
-    md_error("Failed to load macro: " + name);
+    error("Failed to load macro: " + name);
     return nullptr;
   }
 
@@ -87,7 +87,7 @@ Macro *load_macro(const std::string &name) {
   try {
     file >> data;
   } catch (const std::exception &e) {
-    md_error(std::string("Failed to parse json: ") + e.what());
+    error(std::string("Failed to parse json: ") + e.what());
     return nullptr;
   }
 
@@ -96,7 +96,7 @@ Macro *load_macro(const std::string &name) {
     for (const auto &raw_action : data["macro"]) {
       if (!raw_action.is_array() || raw_action.empty() ||
           !raw_action[0].is_string()) {
-        md_error("Invalid action format in macro");
+        error("Invalid action format in macro");
         delete macro;
         return nullptr;
       }
@@ -110,7 +110,7 @@ Macro *load_macro(const std::string &name) {
         } else if (raw_action[i].is_number_integer()) {
           action.args.push_back(raw_action[i].get<int>());
         } else {
-          md_error("Invalid argument type in action");
+          error("Invalid argument type in action");
           delete macro;
           return nullptr;
         }

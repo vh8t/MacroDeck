@@ -1,6 +1,7 @@
 #include "opcode.hpp"
+#include "log.hpp"
 
-Opcode str_to_op(std::string str) {
+Opcode str_to_op(const std::string &str) {
   if (str == "app_open")
     return APP_OPEN;
   if (str == "app_close")
@@ -39,5 +40,6 @@ Opcode str_to_op(std::string str) {
     return VOLUME_TOGGLE;
   if (str == "wait")
     return WAIT;
+  warn("Unknown action: " + str);
   return NOP;
 }

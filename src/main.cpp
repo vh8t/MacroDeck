@@ -1,6 +1,7 @@
 #define CROW_USE_BOOST 1
 
 #include "api.hpp"
+#include "crow.h"
 #include "loader.hpp"
 #include "log.hpp"
 #include "macro.hpp"
@@ -11,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ifaddrs.h>
+#include <iostream>
 #include <netinet/in.h>
 #include <string>
 #include <sys/types.h>
@@ -21,20 +23,21 @@ using json = nlohmann::json;
 std::unordered_map<std::string, Macro *> loaded_macros;
 
 void setup() {
-  md_log("Initializing X11 display");
+  log("Initializing X11 display");
   init_x11();
-  md_log("Initializing master volume control");
+  log("Initializing master volume control");
   init_alsa();
 }
 
 void cleanup() {
-  md_log("Cleaning X11 display");
+  std::cout << "\n";
+  log("Cleaning X11 display");
   clean_x11();
-  md_log("Cleaning master volume control");
+  log("Cleaning master volume control");
   clean_alsa();
 
   for (auto &[name, macro] : loaded_macros) {
-    md_log("Deallocating macro: " + name);
+    log("Deallocating macro: " + name);
     delete macro;
   }
   loaded_macros.clear();
@@ -48,7 +51,7 @@ void sig_handler(int signal) {
 int main() {
   struct ifaddrs *ifaddr;
   if (getifaddrs(&ifaddr) == -1) {
-    md_error("Failed to get interface addresses");
+    error("Failed to get interface addresses");
     return 1;
   }
 
@@ -63,9 +66,11 @@ int main() {
           reinterpret_cast<struct sockaddr_in *>(ifa->ifa_addr);
       inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
 
-      md_log(std::string("Interface: ") + ifa->ifa_name + ", IP: " + ip);
+      info(std::string("Interface: ") + ifa->ifa_name + ", IP: " + ip);
     }
   }
+
+  info("Port: 5000");
 
   freeifaddrs(ifaddr);
 
@@ -73,18 +78,18 @@ int main() {
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
 
-  md_log("Getting config");
+  log("Getting config");
   json config = load_config();
 
   if (config == nullptr) {
-    md_error("Could not load config from '~/.config/macrodeck/config.json'");
+    error("Could not load config from '~/.config/macrodeck/config.json'");
     return -1;
   }
 
   if (config.contains("buttons") && config["buttons"].is_array()) {
     for (const auto &button : config["buttons"]) {
       if (!button.is_object()) {
-        md_warn("Invalid button format");
+        warn("Invalid button format");
         continue;
       }
 
@@ -93,10 +98,10 @@ int main() {
 
         Macro *macro = load_macro(macro_name);
         if (macro) {
-          md_log("Loaded macro: " + macro_name);
+          log("Loaded macro: " + macro_name);
           loaded_macros[macro_name] = macro;
         } else {
-          md_warn("Failed to load macro: " + macro_name);
+          warn("Failed to load macro: " + macro_name);
         }
       }
     }
@@ -106,13 +111,13 @@ int main() {
 
   CROW_WEBSOCKET_ROUTE(app, "/ws")
       .onopen([&](crow::websocket::connection &conn) {
-        md_log("Opened connection with: " + conn.get_remote_ip());
+        log("Opened connection with: " + conn.get_remote_ip());
       })
 
       .onclose([&](crow::websocket::connection &conn, const std::string &reason,
                    uint16_t) {
-        md_log("Closed connection with: " + conn.get_remote_ip() +
-               " with reason: " + reason);
+        log("Closed connection with: " + conn.get_remote_ip() +
+            " with reason: " + reason);
       })
 
       .onmessage([&](crow::websocket::connection &conn, const std::string &data,
@@ -126,10 +131,10 @@ int main() {
             std::string macro_name = data.substr(10);
 
             if (loaded_macros.find(macro_name) != loaded_macros.end()) {
-              md_log("Running macro: " + macro_name);
+              log("Running macro: " + macro_name);
               loaded_macros[macro_name]->run();
             } else {
-              md_error("Invalid macro: " + macro_name);
+              error("Invalid macro: " + macro_name);
             }
           }
         }
@@ -140,5 +145,6 @@ int main() {
     return page;
   });
 
+  app.loglevel(crow::LogLevel::Warning);
   app.port(5000).multithreaded().run();
 }

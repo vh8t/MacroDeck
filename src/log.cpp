@@ -6,15 +6,15 @@
 #include <iostream>
 #include <sstream>
 
-#define RESET "\033[0m"
-#define BOLD "\033[1m"
-#define DIM "\033[2m"
+#define RESET "\x1b[0m"
+#define BOLD "\x1b[1m"
 
-#define GREEN "\033[32m"
-#define YELLOW "\033[33m"
-#define RED "\033[31m"
-#define CYAN "\033[36m"
-#define WHITE "\033[37m"
+#define RED "\x1b[31m"
+#define GREEN "\x1b[32m"
+#define YELLOW "\x1b[33m"
+#define MAGENTA "\x1b[35m"
+#define CYAN "\x1b[36m"
+#define WHITE "\x1b[37m"
 
 std::string current_time() {
   auto now = std::chrono::system_clock::now();
@@ -26,27 +26,32 @@ std::string current_time() {
   return oss.str();
 }
 
-void md_log(const std::string &message) {
-  std::cout << DIM << CYAN << "(" << current_time() << ") " << RESET << BOLD
-            << GREEN << "[LOG] " << RESET << message << std::endl;
+void log(const std::string &message) {
+  std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << GREEN
+            << "[LOG  ] " << RESET << message << std::endl;
 }
 
-void md_warn(const std::string &message) {
-  std::cout << DIM << CYAN << "(" << current_time() << ") " << RESET << BOLD
-            << YELLOW << "[WARN] " << RESET << message << std::endl;
+void info(const std::string &message) {
+  std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << MAGENTA
+            << "[INFO ] " << RESET << message << std::endl;
 }
 
-void md_error(const std::string &message) {
-  std::cerr << DIM << CYAN << "(" << current_time() << ") " << RESET << BOLD
-            << RED << "[ERROR] " << RESET << message << std::endl;
+void warn(const std::string &message) {
+  std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << YELLOW
+            << "[WARN ] " << RESET << message << std::endl;
+}
+
+void error(const std::string &message) {
+  std::cerr << CYAN << "(" << current_time() << ") " << RESET << BOLD << RED
+            << "[ERROR] " << RESET << message << std::endl;
 }
 
 #undef RESET
 #undef BOLD
-#undef DIM
 
+#undef RED
 #undef GREEN
 #undef YELLOW
-#undef RED
+#undef MAGENTA
 #undef CYAN
 #undef WHITE

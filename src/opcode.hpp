@@ -34,4 +34,4 @@ enum Opcode {
   WAIT,
 };
 
-Opcode str_to_op(std::string str);
+Opcode str_to_op(const std::string &str);
