@@ -49,7 +49,7 @@ struct Action {
   void execute() const {
     switch (opcode) {
     case NOP:
-      warn("Invalid opcode " + std::to_string(opcode));
+      warning("Invalid opcode " + std::to_string(opcode));
       break;
     case APP_OPEN: {
       if (args.size() == 0 || is_int(0)) {

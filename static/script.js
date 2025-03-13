@@ -122,7 +122,6 @@ function createGrid() {
     }
 
     if ("scale" in btn && typeof btn.scale === "number") {
-      console.log(typeof btn.scale);
       button.style.width = `${Math.round(squareSize * btn.scale)}px`;
       button.style.height = `${Math.round(squareSize * btn.scale)}px`;
     } else {

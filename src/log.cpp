@@ -16,6 +16,11 @@
 #define CYAN "\x1b[36m"
 #define WHITE "\x1b[37m"
 
+#define LOG "[LOG    ]"
+#define INFO "[INFO   ]"
+#define ERROR "[ERROR  ]"
+#define WARNING "[WARNING]"
+
 std::string current_time() {
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -28,22 +33,22 @@ std::string current_time() {
 
 void log(const std::string &message) {
   std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << GREEN
-            << "[LOG  ] " << RESET << message << std::endl;
+            << LOG << RESET << " " << message << std::endl;
 }
 
 void info(const std::string &message) {
   std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << MAGENTA
-            << "[INFO ] " << RESET << message << std::endl;
-}
-
-void warn(const std::string &message) {
-  std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << YELLOW
-            << "[WARN ] " << RESET << message << std::endl;
+            << INFO << RESET << " " << message << std::endl;
 }
 
 void error(const std::string &message) {
   std::cerr << CYAN << "(" << current_time() << ") " << RESET << BOLD << RED
-            << "[ERROR] " << RESET << message << std::endl;
+            << ERROR << RESET << " " << message << std::endl;
+}
+
+void warning(const std::string &message) {
+  std::cout << CYAN << "(" << current_time() << ") " << RESET << BOLD << YELLOW
+            << WARNING << RESET << " " << message << std::endl;
 }
 
 #undef RESET
@@ -55,3 +60,8 @@ void error(const std::string &message) {
 #undef MAGENTA
 #undef CYAN
 #undef WHITE
+
+#undef LOG
+#undef INFO
+#undef ERROR
+#undef WARNING

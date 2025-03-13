@@ -40,6 +40,6 @@ Opcode str_to_op(const std::string &str) {
     return VOLUME_TOGGLE;
   if (str == "wait")
     return WAIT;
-  warn("Unknown action: " + str);
+  warning("Unknown action: " + str);
   return NOP;
 }

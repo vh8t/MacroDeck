@@ -19,8 +19,14 @@
 #include <unordered_map>
 
 using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 std::unordered_map<std::string, Macro *> loaded_macros;
+
+std::string get_base_dir() {
+  std::string exe_dir = fs::canonical("/proc/self/exe").parent_path().string();
+  return fs::path(exe_dir).parent_path().string();
+}
 
 void setup() {
   log("Initializing X11 display");
@@ -89,7 +95,7 @@ int main() {
   if (config.contains("buttons") && config["buttons"].is_array()) {
     for (const auto &button : config["buttons"]) {
       if (!button.is_object()) {
-        warn("Invalid button format");
+        warning("Invalid button format");
         continue;
       }
 
@@ -101,11 +107,21 @@ int main() {
           log("Loaded macro: " + macro_name);
           loaded_macros[macro_name] = macro;
         } else {
-          warn("Failed to load macro: " + macro_name);
+          warning("Failed to load macro: " + macro_name);
         }
       }
     }
   }
+
+  std::string base_dir = get_base_dir();
+  std::string template_dir = base_dir + "/templates";
+  std::string static_dir = base_dir + "/static";
+
+  log("Setting base dir: " + base_dir);
+  log("Setting template dir: " + template_dir);
+  log("Setting static dir: " + static_dir);
+
+  crow::mustache::set_global_base(template_dir);
 
   crow::SimpleApp app;
 
@@ -131,7 +147,7 @@ int main() {
             std::string macro_name = data.substr(10);
 
             if (loaded_macros.find(macro_name) != loaded_macros.end()) {
-              log("Running macro: " + macro_name);
+              info("Running macro: " + macro_name);
               loaded_macros[macro_name]->run();
             } else {
               error("Invalid macro: " + macro_name);
@@ -143,6 +159,20 @@ int main() {
   CROW_ROUTE(app, "/")([]() {
     auto page = crow::mustache::load_text("index.html");
     return page;
+  });
+
+  CROW_ROUTE(app, "/assets/<path>")
+  ([static_dir](const crow::request &req, crow::response &res,
+                std::string path) {
+    std::string file_path = static_dir + "/" + path;
+    if (!fs::exists(file_path)) {
+      res.code = 404;
+      res.write("File not found");
+      error("File not found: " + file_path);
+    } else {
+      res.set_static_file_info_unsafe(file_path);
+    }
+    res.end();
   });
 
   app.loglevel(crow::LogLevel::Warning);
