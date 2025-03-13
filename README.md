@@ -54,36 +54,9 @@ ninja
 ## Usage
 Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
 
-Macro documentation: [DOCS](macro_docs.md)
-
-For `MacroDeck` to work a `~/.config/macrodeck/config.json` is required, a config could look like this:
-```json
-{
-    "size": "2x4",
-    "rotation": "horizontal",
-    "buttons": [
-        {
-            "macro": "<macro name>",
-            "text": "Button Text",
-            "bg": "#63f",
-            "fg": "#eee",
-            "radius": "25%",
-            "active": "#30c"
-        }
-    ]
-}
-```
-
-- `size`: the `<rows>x<cols>` representing the button grid (reguired)
-- `rotation`: the default screen orientation (not required but recommended)
-- `buttons`: list of the buttons (required)
-
-- `macro`: the macro name to execute when pressed (required)
-- `text`: the button text, defaults to `macro` (not required)
-- `bg`: the button background, defaults to `#007bff` (not required)
-- `fg`: the button foreground, defaults to `#ffffff` (not required)
-- `radius`: the button corner radius in `%` or `px`, defaults to `25%` (not required)
-- `active`: the button color when active, defaults to `#0047a6` (not required)
+## Config
+- Config documentation can be found [here](docs/config.md)
+- Macro documentation can be found [here](docs/macro.md)
 
 ## Future Plans
 - Expand support to **Wayland**
