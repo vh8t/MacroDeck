@@ -1,6 +1,0 @@
-tlacitka 4*2
-potenciometry 3
-- hlasitost
-- mikrofon
-- customisable
-
