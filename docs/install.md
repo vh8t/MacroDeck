@@ -37,8 +37,7 @@ cd build
 cmake -G Ninja ..
 ninja
 
-cd ..
-./build/MacroDeck
+./MacroDeck
 ```
 
 This will compile and launch MacroDeck. Ensure all dependencies are installed before running the build process.

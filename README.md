@@ -48,8 +48,7 @@ cd build
 cmake -G Ninja ..
 ninja
 
-cd ..
-./build/MacroDeck
+./MacroDeck
 ```
 
 ## Usage
