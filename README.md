@@ -14,27 +14,27 @@ MacroDeck is an open-source alternative to Stream Deck. Instead of using a physi
 ### Dependencies
 To compile and run MacroDeck, the following dependencies are required:
 
-- **CMake** (for configuring the build system)
-- **Ninja** (for compiling the source code)
-- **libX11** (for X11 window system interaction)
-- **libXtst** (for keyboard emulation and keybinds)
-- **libXKBcommon** (for keyboard extension)
-- **ALSA** (Advanced Linux Sound Architecture for sound manipulation)
-- **nlohmann-json** (for handling config and macro files)
-- **Crow** (for the web server, requires Boost for async operations)
-- **Boost** (required by Crow for async functionality)
+- **CMake** - Configures the build system
+- **Ninja** – Compiles the source code
+- **libX11** - X11 window system interaction
+- **libXtst** - Keyboard emulation and keybinds
+- **libXKBcommon** - Keyboard extension
+- **ALSA** – Advanced Linux Sound Architecture for sound manipulation
+- **nlohmann-json** – Handles config and macro files
+- **Crow** – Web server framework (requires Boost for async operations)
+- **Boost** – Required by Crow for async functionality
 
 ### Building from source
 #### Installing libraries
 
-Arch:
+**Arch Linux**
 ```sh
 pacman -S libx11 libxtst libxkbcommon alsa-lib boost
 ```
 
-Ubuntu:
-```sh 
-apt install libx11-dev libxtst-dev libxkbcommon0 libacound2-dev libboost-all-dev
+**Ubuntu/Debian**
+```sh
+apt install libx11-dev libxtst-dev libxkbcommon0 libasound2-dev libboost-all-dev
 ```
 
 #### Compiling source code
@@ -48,15 +48,15 @@ cd build
 cmake -G Ninja ..
 ninja
 
-./MacroDeck
+cd ..
+./build/MacroDeck
 ```
 
 ## Usage
 Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
 
 ## Config
-- Config documentation can be found [here](docs/config.md)
-- Macro documentation can be found [here](docs/macro.md)
+- All documentation can be found [here](https://github.com/vh8t/MacroDeck/wiki)
 
 ## Future Plans
 - Expand support to **Wayland**
