@@ -1,70 +1,36 @@
 {
-  "size": "2x4",
+  "size": "2x3",
   "rotation": "horizontal",
   "buttons": [
     {
-      "macro": "type",
-      "text": "Type",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
-    },
-    {
-      "macro": "setup",
-      "text": "Setup",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
-    },
-    {
-      "macro": "volume_up",
-      "text": "Inc",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "macro": "volume_toggle",
+      "text": "Volume Mute",
+      "scale": 1.3
     },
     {
       "macro": "volume_down",
-      "text": "Dec",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "text": "Volume Down",
+      "scale": 1.3
     },
     {
-      "macro": "volume_set",
-      "text": "Set",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "macro": "volume_up",
+      "text": "Volume Up",
+      "scale": 1.3
     },
     {
-      "macro": "volume_mute",
-      "text": "Mute",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "macro": "open_terminal",
+      "text": "Terminal",
+      "scale": 1.3
     },
     {
-      "macro": "volume_unmute",
-      "text": "Unmute",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "macro": "desktop_1",
+      "text": "Desk 1",
+      "scale": 1.3
     },
     {
-      "macro": "volume_toggle",
-      "text": "Toggle",
-      "bg": "#63f",
-      "fg": "#eee",
-      "radius": "10%",
-      "active": "#30c"
+      "macro": "desktop_2",
+      "text": "Desk 2",
+      "scale": 1.3
     }
   ]
 }

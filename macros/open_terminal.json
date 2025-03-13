@@ -1,0 +1,5 @@
+{
+  "macro": [
+    ["app_open", "wezterm", "start", "--always-new-process"]
+  ]
+}

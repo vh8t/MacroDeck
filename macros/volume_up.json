@@ -1,6 +1,5 @@
 {
-  "author": "vh8t",
   "macro": [
-    ["volume_inc", 10]
+    ["volume_inc", 5]
   ]
 }
