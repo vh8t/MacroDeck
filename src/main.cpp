@@ -194,7 +194,6 @@ int main() {
     }
     res.code = 404;
     res.write("File not found");
-    warning("File not found: " + path);
     res.end();
   });
 

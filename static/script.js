@@ -36,19 +36,7 @@ socket.onclose = () => {
 
 window.onresize = createGrid;
 
-async function checkIcon(iconName) {
-  try {
-    const response = await fetch(`/icon/${iconName}`, { method: "HEAD" });
-
-    if (response.ok) {
-      return `/icon/${iconName}`;
-    }
-  } catch (_) {}
-
-  return null;
-}
-
-async function createGrid() {
+function createGrid() {
   if (!("size" in config)) {
     displayError(
       `Missing <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
@@ -129,7 +117,12 @@ async function createGrid() {
 
     button.style.padding = "0";
 
-    const icon = await checkIcon(btn.macro);
+    const req = new XMLHttpRequest();
+    req.open("HEAD", `/icon/${btn.macro}`, false);
+    req.send();
+
+    const icon =
+      req.status >= 200 && req.status < 300 ? `/icon/${btn.macro}` : null;
 
     if (icon !== null) {
       const img = document.createElement("img");
