@@ -36,7 +36,19 @@ socket.onclose = () => {
 
 window.onresize = createGrid;
 
-function createGrid() {
+async function checkIcon(iconName) {
+  try {
+    const response = await fetch(`/icon/${iconName}`, { method: "HEAD" });
+
+    if (response.ok) {
+      return `/icon/${iconName}`;
+    }
+  } catch (_) {}
+
+  return null;
+}
+
+async function createGrid() {
   if (!("size" in config)) {
     displayError(
       `Missing <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
@@ -115,10 +127,28 @@ function createGrid() {
     button.setAttribute("data-id", `button-${i}`);
     button.setAttribute("data-macro", btn.macro);
 
-    if ("text" in btn) {
-      button.textContent = btn.text;
+    button.style.padding = "0";
+
+    const icon = await checkIcon(btn.macro);
+
+    if (icon !== null) {
+      const img = document.createElement("img");
+      img.src = icon;
+      img.style.width = "100%";
+      img.style.height = "100%";
+      button.appendChild(img);
+
+      if ("radius" in btn) {
+        img.style.borderRadius = btn.radius;
+      } else {
+        img.style.borderRadius = "25%";
+      }
     } else {
-      button.textContent = btn.macro;
+      if ("text" in btn) {
+        button.textContent = btn.text;
+      } else {
+        button.textContent = btn.macro;
+      }
     }
 
     if ("scale" in btn && typeof btn.scale === "number") {
@@ -172,7 +202,7 @@ function createGrid() {
 }
 
 function handleButtonClick(event) {
-  const button = event.target;
+  const button = event.currentTarget;
   const buttonId = button.getAttribute("data-id");
   const macro = button.getAttribute("data-macro");
 
@@ -184,6 +214,7 @@ function handleButtonClick(event) {
   cooldowns[buttonId] = true;
 
   socket.send(`run-macro:${macro}`);
+  console.log(macro);
 
   setTimeout(() => {
     button.disabled = false;

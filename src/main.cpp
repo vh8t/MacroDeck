@@ -22,6 +22,7 @@ using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 std::unordered_map<std::string, Macro *> loaded_macros;
+std::vector<std::array<std::string, 2>> icons;
 
 std::string get_base_dir() {
   std::string exe_dir = fs::canonical("/proc/self/exe").parent_path().string();
@@ -103,9 +104,15 @@ int main() {
         std::string macro_name = button["macro"].get<std::string>();
 
         Macro *macro = load_macro(macro_name);
+
         if (macro) {
           log("Loaded macro: " + macro_name);
           loaded_macros[macro_name] = macro;
+
+          std::array<std::string, 2> icon = get_icon(macro_name);
+          if (icon[0] != "" && icon[1] != "") {
+            icons.push_back(icon);
+          }
         } else {
           warning("Failed to load macro: " + macro_name);
         }
@@ -172,6 +179,22 @@ int main() {
     } else {
       res.set_static_file_info_unsafe(file_path);
     }
+    res.end();
+  });
+
+  CROW_ROUTE(app, "/icon/<path>")
+  ([](const crow::request &req, crow::response &res, std::string path) {
+    for (const auto &icon : icons) {
+      if (icon[1].size() >= path.size() &&
+          icon[1].substr(0, path.size()) == path) {
+        res.set_static_file_info_unsafe(icon[0]);
+        res.end();
+        return;
+      }
+    }
+    res.code = 404;
+    res.write("File not found");
+    warning("File not found: " + path);
     res.end();
   });
 

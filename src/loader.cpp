@@ -60,6 +60,33 @@ json load_config() {
   return data;
 }
 
+std::array<std::string, 2> get_icon(const std::string &name) {
+  std::string home_dir;
+  try {
+    home_dir = get_home_dir();
+  } catch (const std::exception &e) {
+    error(e.what());
+    return {"", ""};
+  }
+
+  fs::path logo_path_png =
+      fs::path(home_dir) / ".config/macrodeck/icons" / (name + ".png");
+  fs::path logo_path_jpg =
+      fs::path(home_dir) / ".config/macrodeck/icons" / (name + ".jpg");
+  fs::path logo_path_jpeg =
+      fs::path(home_dir) / ".config/macrodeck/icons" / (name + ".jpeg");
+
+  if (fs::exists(logo_path_png)) {
+    return {logo_path_png.string(), name + ".png"};
+  } else if (fs::exists(logo_path_jpg)) {
+    return {logo_path_jpg.string(), name + ".jpg"};
+  } else if (fs::exists(logo_path_jpeg)) {
+    return {logo_path_jpeg.string(), name + ".jpeg"};
+  }
+
+  return {"", ""};
+}
+
 Macro *load_macro(const std::string &name) {
   std::string home_dir;
   try {
