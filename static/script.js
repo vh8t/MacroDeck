@@ -127,14 +127,23 @@ function createGrid() {
     if (icon !== null) {
       const img = document.createElement("img");
       img.src = icon;
-      img.style.width = "100%";
-      img.style.height = "100%";
+
+      if ("img-width" in btn) {
+        img.style.width = btn["img-width"];
+      } else {
+        img.style.width = "100%";
+      }
+
+      if ("img-height" in btn) {
+        img.style.height = btn["img-height"];
+      } else {
+        img.style.height = "auto";
+      }
+
       button.appendChild(img);
 
-      if ("radius" in btn) {
-        img.style.borderRadius = btn.radius;
-      } else {
-        img.style.borderRadius = "25%";
+      if ("img-radius" in btn) {
+        img.style.borderRadius = btn["img-radius"];
       }
     } else {
       if ("text" in btn) {

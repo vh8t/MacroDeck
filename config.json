@@ -5,31 +5,50 @@
     {
       "macro": "volume_toggle",
       "text": "Volume Mute",
-      "scale": 1.3
+      "bg": "#eee",
+      "fg": "#000",
+      "scale": 1.3,
+      "img-height": "60%",
+      "img-width": "auto"
     },
     {
       "macro": "volume_down",
       "text": "Volume Down",
-      "scale": 1.3
+      "bg": "#eee",
+      "fg": "#000",
+      "scale": 1.3,
+      "img-height": "60%",
+      "img-width": "auto"
     },
     {
       "macro": "volume_up",
       "text": "Volume Up",
-      "scale": 1.3
+      "bg": "#eee",
+      "fg": "#000",
+      "scale": 1.3,
+      "img-height": "auto",
+      "img-width": "60%"
     },
     {
       "macro": "open_terminal",
       "text": "Terminal",
-      "scale": 1.3
+      "bg": "#eee",
+      "fg": "#000",
+      "scale": 1.3,
+      "img-radius": "25%"
     },
     {
       "macro": "desktop_1",
       "text": "Desk 1",
+      "bg": "#eee",
+      "fg": "#000",
       "scale": 1.3
     },
     {
       "macro": "desktop_2",
       "text": "Desk 2",
+      "bg": "#eee",
+      "fg": "#000",
       "scale": 1.3
     }
   ]
