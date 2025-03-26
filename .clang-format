@@ -1,0 +1,2 @@
+AllowShortFunctionsOnASingleLine: false
+# BasedOnStyle: GNU

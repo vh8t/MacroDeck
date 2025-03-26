@@ -16,9 +16,11 @@ struct Action {
   Opcode opcode;
   std::vector<std::variant<int, std::string>> args;
 
-  Action(Opcode op) : opcode(op) {}
+  Action(Opcode op) : opcode(op) {
+  }
   Action(Opcode op, std::vector<std::variant<int, std::string>> args)
-      : opcode(op), args(args) {}
+      : opcode(op), args(args) {
+  }
 
   bool is_int(uint index) const {
     if (index < args.size()) {
