@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(MacroPad
-        VERSION 0.0.1
+        VERSION 0.0.2
         DESCRIPTION "MacroPad Application"
         LANGUAGES CXX)
 
