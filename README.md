@@ -49,6 +49,7 @@ ninja
 ```
 
 ## Usage
+- Move `config.json`, `icons/` and `macros/` to `~/.config/macrodeck`
 Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
 
 ## Config
