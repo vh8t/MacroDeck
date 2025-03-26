@@ -13,7 +13,6 @@ set(CMAKE_BUILD_TYPE Release)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-find_package(X11 REQUIRED)
 find_package(ALSA REQUIRED)
 
 file(GLOB SOURCES "src/*.cpp")
@@ -31,6 +30,6 @@ set(VERSION_TAG "-dev")
 set(PROJECT_FULL_VERSION "${PROJECT_VERSION}${VERSION_TAG}")
 message(STATUS "${PROJECT_NAME} version: ${PROJECT_FULL_VERSION}")
 
-target_link_libraries(MacroPad ${X11_LIBRARIES} Xtst ${ALSA_LIBRARIES})
+target_link_libraries(MacroPad ${ALSA_LIBRARIES})
 
 # install(TARGETS MacroPad DESTINATION bin)

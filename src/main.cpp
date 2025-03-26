@@ -56,11 +56,11 @@ void sig_handler(int signal) {
   std::exit(signal);
 }
 
-int main() {
+void get_interfaces() {
   struct ifaddrs *ifaddr;
   if (getifaddrs(&ifaddr) == -1) {
     error("Failed to get interface addresses");
-    return 1;
+    return;
   }
 
   for (struct ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
@@ -74,12 +74,18 @@ int main() {
           reinterpret_cast<struct sockaddr_in *>(ifa->ifa_addr);
       inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
 
+      if (strncmp(ip, "127.", 4) == 0) {
+        continue;
+      }
+
       info(std::string("Interface: ") + ifa->ifa_name + ", IP: " + ip);
     }
   }
 
   freeifaddrs(ifaddr);
+}
 
+int main() {
   setup();
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
@@ -101,6 +107,9 @@ int main() {
 
       if (button.contains("macro") && button["macro"].is_string()) {
         std::string macro_name = button["macro"].get<std::string>();
+        if (loaded_macros.find(macro_name) != loaded_macros.end()) {
+          continue;
+        }
 
         Macro *macro = load_macro(macro_name);
 
@@ -196,6 +205,7 @@ int main() {
     res.end();
   });
 
+  get_interfaces();
   info("App ready on port 5000");
 
   app.loglevel(crow::LogLevel::Warning);
