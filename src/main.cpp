@@ -98,31 +98,65 @@ int main() {
     return -1;
   }
 
-  if (config.contains("buttons") && config["buttons"].is_array()) {
-    for (const auto &button : config["buttons"]) {
-      if (!button.is_object()) {
-        warning("Invalid button format");
-        continue;
-      }
+  if (config.is_array()) {
+    for (const auto &conf : config) {
+      if (conf.contains("buttons") && conf["buttons"].is_array()) {
+        for (const auto &button : conf["buttons"]) {
+          if (!button.is_object()) {
+            warning("Invalid button format");
+            continue;
+          }
 
-      if (button.contains("macro") && button["macro"].is_string()) {
-        std::string macro_name = button["macro"].get<std::string>();
-        if (loaded_macros.find(macro_name) != loaded_macros.end()) {
+          if (button.contains("macro") && button["macro"].is_string()) {
+            std::string macro_name = button["macro"].get<std::string>();
+            if (loaded_macros.find(macro_name) != loaded_macros.end()) {
+              continue;
+            }
+
+            Macro *macro = load_macro(macro_name);
+
+            if (macro) {
+              log("Loaded macro: " + macro_name);
+              loaded_macros[macro_name] = macro;
+
+              std::array<std::string, 2> icon = get_icon(macro_name);
+              if (icon[0] != "" && icon[1] != "") {
+                icons.push_back(icon);
+              }
+            } else {
+              warning("Failed to load macro: " + macro_name);
+            }
+          }
+        }
+      }
+    }
+  } else if (config.is_object()) {
+    if (config.contains("buttons") && config["buttons"].is_array()) {
+      for (const auto &button : config["buttons"]) {
+        if (!button.is_object()) {
+          warning("Invalid button format");
           continue;
         }
 
-        Macro *macro = load_macro(macro_name);
-
-        if (macro) {
-          log("Loaded macro: " + macro_name);
-          loaded_macros[macro_name] = macro;
-
-          std::array<std::string, 2> icon = get_icon(macro_name);
-          if (icon[0] != "" && icon[1] != "") {
-            icons.push_back(icon);
+        if (button.contains("macro") && button["macro"].is_string()) {
+          std::string macro_name = button["macro"].get<std::string>();
+          if (loaded_macros.find(macro_name) != loaded_macros.end()) {
+            continue;
           }
-        } else {
-          warning("Failed to load macro: " + macro_name);
+
+          Macro *macro = load_macro(macro_name);
+
+          if (macro) {
+            log("Loaded macro: " + macro_name);
+            loaded_macros[macro_name] = macro;
+
+            std::array<std::string, 2> icon = get_icon(macro_name);
+            if (icon[0] != "" && icon[1] != "") {
+              icons.push_back(icon);
+            }
+          } else {
+            warning("Failed to load macro: " + macro_name);
+          }
         }
       }
     }

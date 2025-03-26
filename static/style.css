@@ -29,6 +29,21 @@ body {
   background: var(--color-background);
 }
 
+#config-picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100vw;
+  height: 100vh;
+}
+
+#config-picker button {
+  padding: 3px 10px;
+  border-radius: 5px;
+}
+
 #grid-container {
   display: grid;
   width: 100vw;
@@ -41,19 +56,19 @@ body {
   align-items: center;
 }
 
-.grid-button {
+button {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--color-button);
   color: var(--color-text-primary);
-  border-radius: 25%;
   border: none;
   font-size: 1rem;
   cursor: pointer;
+  border-radius: 25%;
 }
 
-.grid-button:disabled {
+button:disabled {
   background-color: var(--color-button-disabled) !important;
 }
 

@@ -18,7 +18,11 @@ socket.onmessage = (e) => {
 
     try {
       config = JSON.parse(raw_config);
-      createGrid();
+      if (Array.isArray(config)) {
+        configPicker();
+      } else {
+        createGrid();
+      }
     } catch (error) {
       console.error("Failed to parse JSON:", error);
       displayError("Failed to parse JSON:" + error.toString());
@@ -34,9 +38,54 @@ socket.onclose = () => {
   console.log("WebSocket connection closed");
 };
 
-window.onresize = createGrid;
+window.addEventListener("resize", () => {
+  if (Array.isArray(config)) {
+    configPicker();
+  } else {
+    createGrid();
+  }
+});
+
+function configPicker() {
+  let element;
+  if ((element = document.getElementById("grid-container"))) {
+    element.remove();
+  }
+
+  if ((element = document.getElementById("config-picker"))) {
+    element.remove();
+  }
+
+  const picker = document.createElement("div");
+  picker.id = "config-picker";
+
+  config.forEach((obj) => {
+    if ("name" in obj) {
+      const button = document.createElement("button");
+      button.textContent = obj.name;
+
+      button.addEventListener("click", () => {
+        config = obj;
+        createGrid();
+      });
+
+      picker.appendChild(button);
+    }
+  });
+
+  document.body.appendChild(picker);
+}
 
 function createGrid() {
+  let element;
+  if ((element = document.getElementById("grid-container"))) {
+    element.remove();
+  }
+
+  if ((element = document.getElementById("config-picker"))) {
+    element.remove();
+  }
+
   if (!("size" in config)) {
     displayError(
       `Missing <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
@@ -71,7 +120,8 @@ function createGrid() {
     document.body.style.backgroundColor = config.bg;
   }
 
-  const container = document.getElementById("grid-container");
+  const container = document.createElement("div");
+  container.id = "grid-container";
 
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
@@ -205,6 +255,8 @@ function createGrid() {
     button.addEventListener("click", handleButtonClick);
     cooldowns[`button-${i}`] = false;
   }
+
+  document.body.appendChild(container);
 }
 
 function handleButtonClick(event) {
