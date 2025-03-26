@@ -1,9 +1,40 @@
 #include "apps.hpp"
 #include "log.hpp"
 
+#include <boost/asio/detail/std_fenced_block.hpp>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <sys/wait.h>
+
+std::string hyprland_get_class_name(const std::string &partial) {
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("hyprctl clients", "r"),
+                                                pclose);
+  if (!pipe) {
+    error("Failed to execute: hyprctl clients");
+    return "";
+  }
+
+  std::string exact_class;
+  char buffer[256];
+  while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+    std::string line(buffer);
+    if (line.find("class: ") != std::string::npos) {
+      std::istringstream iss(line);
+      std::string key, value;
+      iss >> key >> value;
+
+      if (value.find(partial) != std::string::npos) {
+        exact_class = value;
+        break;
+      }
+    }
+  }
+  return exact_class;
+}
 
 void app_open(const std::string &name, const std::vector<std::string> &args) {
   pid_t pid = fork();
@@ -81,9 +112,15 @@ void app_switch(const std::string &name) {
 
       const char *hypr_env = getenv("HYPRLAND_INSTANCE_SIGNATURE");
       if (hypr_env) {
-        log("Executing: hyprctl dispatch focuswindow class:" + name);
+        std::string full_class = hyprland_get_class_name(name);
+        if (full_class.empty()) {
+          warning("No matching window found for: " + name);
+          return;
+        }
+
+        log("Executing: hyprctl dispatch focuswindow class:" + full_class);
         execlp("hyprctl", "hyprctl", "dispatch", "focuswindow",
-               ("class:" + name).c_str(), nullptr);
+               ("class:" + full_class).c_str(), nullptr);
         error(std::string("Failed to execute hyprctl: ") + strerror(errno));
       }
     } else {

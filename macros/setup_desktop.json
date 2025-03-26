@@ -1,11 +1,11 @@
 {
   "macro": [
     ["key_click", "SUPER 1"],
-    ["wait", 100],
+    ["wait", 500],
     ["key_click", "SUPER ENTER"],
-    ["wait", 100],
+    ["wait", 500],
     ["key_click", "SUPER 2"],
-    ["wait", 100],
+    ["wait", 500],
     ["key_click", "SUPER n"]
   ]
 }

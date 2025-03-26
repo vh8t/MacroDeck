@@ -149,15 +149,113 @@ Key char_to_keycode(char c) {
     return {KEY_TAB, false};
   case '\b':
     return {KEY_BACKSPACE, false};
+  case 'a':
+    return {KEY_A, false};
+  case 'b':
+    return {KEY_B, false};
+  case 'c':
+    return {KEY_C, false};
+  case 'd':
+    return {KEY_D, false};
+  case 'e':
+    return {KEY_E, false};
+  case 'f':
+    return {KEY_F, false};
+  case 'g':
+    return {KEY_G, false};
+  case 'h':
+    return {KEY_H, false};
+  case 'i':
+    return {KEY_I, false};
+  case 'j':
+    return {KEY_J, false};
+  case 'k':
+    return {KEY_K, false};
+  case 'l':
+    return {KEY_L, false};
+  case 'm':
+    return {KEY_M, false};
+  case 'n':
+    return {KEY_N, false};
+  case 'o':
+    return {KEY_O, false};
+  case 'p':
+    return {KEY_P, false};
+  case 'q':
+    return {KEY_Q, false};
+  case 'r':
+    return {KEY_R, false};
+  case 's':
+    return {KEY_S, false};
+  case 't':
+    return {KEY_T, false};
+  case 'u':
+    return {KEY_U, false};
+  case 'v':
+    return {KEY_V, false};
+  case 'w':
+    return {KEY_W, false};
+  case 'x':
+    return {KEY_X, false};
+  case 'y':
+    return {KEY_Y, false};
+  case 'z':
+    return {KEY_Z, false};
+  case 'A':
+    return {KEY_A, true};
+  case 'B':
+    return {KEY_B, true};
+  case 'C':
+    return {KEY_C, true};
+  case 'D':
+    return {KEY_D, true};
+  case 'E':
+    return {KEY_E, true};
+  case 'F':
+    return {KEY_F, true};
+  case 'G':
+    return {KEY_G, true};
+  case 'H':
+    return {KEY_H, true};
+  case 'I':
+    return {KEY_I, true};
+  case 'J':
+    return {KEY_J, true};
+  case 'K':
+    return {KEY_K, true};
+  case 'L':
+    return {KEY_L, true};
+  case 'M':
+    return {KEY_M, true};
+  case 'N':
+    return {KEY_N, true};
+  case 'O':
+    return {KEY_O, true};
+  case 'P':
+    return {KEY_P, true};
+  case 'Q':
+    return {KEY_Q, true};
+  case 'R':
+    return {KEY_R, true};
+  case 'S':
+    return {KEY_S, true};
+  case 'T':
+    return {KEY_T, true};
+  case 'U':
+    return {KEY_U, true};
+  case 'V':
+    return {KEY_V, true};
+  case 'W':
+    return {KEY_W, true};
+  case 'X':
+    return {KEY_X, true};
+  case 'Y':
+    return {KEY_Y, true};
+  case 'Z':
+    return {KEY_Z, true};
   }
 
-  if (std::isalpha(c)) {
-    if (std::isupper(c)) {
-      return {KEY_A + (c - 'A'), true};
-    } else {
-      return {KEY_A + (std::toupper(c) - 'A'), false};
-    }
-  } else if (std::isdigit(c)) {
+  if (std::isdigit(c)) {
     return {KEY_1 + (c - '1'), false};
   }
 
