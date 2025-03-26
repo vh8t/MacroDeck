@@ -1,7 +1,7 @@
-#include "keyboard.hpp"
 #define CROW_USE_BOOST 1
 
 #include "crow.h"
+#include "keyboard.hpp"
 #include "loader.hpp"
 #include "log.hpp"
 #include "macro.hpp"
