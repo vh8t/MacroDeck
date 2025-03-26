@@ -6,9 +6,9 @@ MacroDeck is an open-source alternative to Stream Deck. Instead of using a physi
 - Open-source and customizable
 - Runs a local web server for easy remote access
 - Supports custom macros using YAML configuration files
-- Works on Linux with X11 (Wayland and Windows support planned)
-- Keyboard emulation and keybindings using X11
-- Sound manipulation with ALSA
+- Works on Linux with X11 and Wayland (Windows support planned)
+- Keyboard emulation and keybindings
+- Sound manipulation
 
 ## Installation
 ### Dependencies
@@ -16,9 +16,6 @@ To compile and run MacroDeck, the following dependencies are required:
 
 - **CMake** - Configures the build system
 - **Ninja** – Compiles the source code
-- **libX11** - X11 window system interaction
-- **libXtst** - Keyboard emulation and keybinds
-- **libXKBcommon** - Keyboard extension
 - **ALSA** – Advanced Linux Sound Architecture for sound manipulation
 - **nlohmann-json** – Handles config and macro files
 - **Crow** – Web server framework (requires Boost for async operations)
@@ -29,12 +26,12 @@ To compile and run MacroDeck, the following dependencies are required:
 
 **Arch Linux**
 ```sh
-pacman -S libx11 libxtst libxkbcommon alsa-lib boost
+pacman -S alsa-lib boost
 ```
 
 **Ubuntu/Debian**
 ```sh
-apt install libx11-dev libxtst-dev libxkbcommon0 libasound2-dev libboost-all-dev
+apt install libasound2-dev libboost-all-dev
 ```
 
 #### Compiling source code
@@ -58,7 +55,6 @@ Once MacroDeck is running, it will start a web server on your local network. The
 - All documentation can be found [here](https://github.com/vh8t/MacroDeck/wiki)
 
 ## Future Plans
-- Expand support to **Wayland**
 - Add compatibility with **Windows**
 
 ## Contributing
