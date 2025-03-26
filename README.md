@@ -49,9 +49,9 @@ sudo -E ./MacroDeck
 ```
 
 ## Usage
-- Move `config.json`, `icons/` and `macros/` to `~/.config/macrodeck`
-- Run macrodeck with `sudo -E` to preserve user env
-Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
+1. Move `config.json`, `icons/` and `macros/` to `~/.config/macrodeck`
+2. Run macrodeck with `sudo -E` to preserve user env
+3. Once MacroDeck is running, it will start a web server on your local network. The IP address and port will be displayed in the terminal. Connect using your phone’s browser and start using your custom macros.
 
 ## Config
 - All documentation can be found [here](https://github.com/vh8t/MacroDeck/wiki)
