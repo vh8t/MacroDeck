@@ -78,8 +78,6 @@ int main() {
     }
   }
 
-  info("Port: 5000");
-
   freeifaddrs(ifaddr);
 
   setup();
@@ -197,6 +195,8 @@ int main() {
     res.write("File not found");
     res.end();
   });
+
+  info("App ready on port 5000");
 
   app.loglevel(crow::LogLevel::Warning);
   app.port(5000).multithreaded().run();
