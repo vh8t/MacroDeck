@@ -1,8 +1,10 @@
 #pragma once
 
 #include "api.hpp"
+#include "keyboard.hpp"
 #include "log.hpp"
 #include "opcode.hpp"
+#include "sound.hpp"
 
 #include <chrono>
 #include <string>

@@ -1,6 +1,7 @@
 {
-  "size": "2x3",
+  "size": "3x4",
   "rotation": "horizontal",
+  "bg": "#ffd1f7",
   "buttons": [
     {
       "macro": "volume_toggle",
@@ -50,6 +51,9 @@
       "bg": "#eee",
       "fg": "#000",
       "scale": 1.3
+    },
+    {
+      "macro": "focus"
     }
   ]
 }

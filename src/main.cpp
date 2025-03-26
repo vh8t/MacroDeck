@@ -1,11 +1,12 @@
+#include "keyboard.hpp"
 #define CROW_USE_BOOST 1
 
-#include "api.hpp"
 #include "crow.h"
 #include "loader.hpp"
 #include "log.hpp"
 #include "macro.hpp"
 #include "nlohmann/json.hpp"
+#include "sound.hpp"
 
 #include <arpa/inet.h>
 #include <csignal>
@@ -30,18 +31,18 @@ std::string get_base_dir() {
 }
 
 void setup() {
-  log("Initializing X11 display");
-  init_x11();
   log("Initializing master volume control");
   init_alsa();
+  log("Initializing virtual keyboard");
+  init_keyboard();
 }
 
 void cleanup() {
   std::cout << "\n";
-  log("Cleaning X11 display");
-  clean_x11();
   log("Cleaning master volume control");
   clean_alsa();
+  log("Cleaning virtual keyboard");
+  clean_keyboard();
 
   for (auto &[name, macro] : loaded_macros) {
     log("Deallocating macro: " + name);

@@ -1,5 +1,5 @@
 {
   "macro": [
-    ["app_open", "wezterm", "start", "--always-new-process"]
+    ["app_open", "ghostty"]
   ]
 }

@@ -67,6 +67,10 @@ function createGrid() {
     }
   });
 
+  if ("bg" in config) {
+    document.body.style.backgroundColor = config.bg;
+  }
+
   const container = document.getElementById("grid-container");
 
   const screenWidth = window.innerWidth;
@@ -221,7 +225,7 @@ function handleButtonClick(event) {
   setTimeout(() => {
     button.disabled = false;
     cooldowns[buttonId] = false;
-  }, 250);
+  }, 100);
 }
 
 function displayError(message) {
