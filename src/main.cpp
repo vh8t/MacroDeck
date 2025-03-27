@@ -1,8 +1,6 @@
-#include <fstream>
-#include <ios>
-#include <sstream>
 #define CROW_USE_BOOST 1
 
+#include "argparse.hpp"
 #include "crow.h"
 #include "keyboard.hpp"
 #include "loader.hpp"
@@ -15,12 +13,18 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <ifaddrs.h>
+#include <ios>
 #include <iostream>
 #include <netinet/in.h>
+#include <sstream>
 #include <string>
 #include <sys/types.h>
 #include <unordered_map>
+
+#define VERSION "0.0.2"
+#define TAG "dev"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -88,7 +92,70 @@ void get_interfaces() {
   freeifaddrs(ifaddr);
 }
 
-int main() {
+int main(int argc, char **argv) {
+  argparse::ArgumentParser program("MacroDeck",
+                                   std::string(VERSION) + "-" + TAG,
+                                   argparse::default_arguments::none);
+
+  program.add_argument("-V", "--verbose")
+      .help("increase output verbosity")
+      .flag();
+
+  program.add_argument("--list-configs")
+      .help("list all config names from config file")
+      .flag();
+
+  program.add_argument("-v", "--version")
+      .help("get the current MacroDeck version")
+      .flag();
+
+  program.add_argument("-h", "--help").help("show this message").flag();
+
+  try {
+    program.parse_args(argc, argv);
+  } catch (const std::exception &e) {
+    error(e.what());
+    std::cerr << program;
+    return 1;
+  }
+
+  bool should_exit = false;
+  if (program["--list-configs"] == true) {
+    json config = load_config();
+
+    if (config == nullptr) {
+      error("Could not load config from '~/.config/macrodeck/config.json'");
+      return -1;
+    }
+
+    if (config.is_array()) {
+      for (size_t i = 0; i < config.size(); i++) {
+        if (config[i].contains("name"))
+          std::cout << i + 1 << ". " << config[i]["name"].get<std::string>()
+                    << "\n";
+      }
+      std::cout.flush();
+    } else {
+      if (config.contains("name")) {
+        std::cout << "1. " << config["name"].get<std::string>() << std::endl;
+      }
+    }
+    should_exit = true;
+  }
+
+  if (program["--version"] == true) {
+    std::cout << "MacroDeck version " << VERSION << "-" << TAG << std::endl;
+    should_exit = true;
+  }
+
+  if (program["--help"] == true) {
+    std::cout << program;
+    should_exit = true;
+  }
+
+  if (should_exit)
+    return 0;
+
   setup();
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
@@ -98,7 +165,7 @@ int main() {
 
   if (config == nullptr) {
     error("Could not load config from '~/.config/macrodeck/config.json'");
-    return -1;
+    return 1;
   }
 
   if (config.is_array()) {
@@ -277,6 +344,8 @@ int main() {
   get_interfaces();
   info("App ready on port 5000");
 
-  app.loglevel(crow::LogLevel::Warning);
+  if (program["--verbose"] != true)
+    app.loglevel(crow::LogLevel::Warning);
+
   app.port(5000).multithreaded().run();
 }
