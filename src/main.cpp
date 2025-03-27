@@ -23,7 +23,7 @@
 #include <sys/types.h>
 #include <unordered_map>
 
-#define VERSION "0.0.2"
+#define VERSION "0.0.3"
 #define TAG "dev"
 
 using json = nlohmann::json;
