@@ -48,7 +48,10 @@ class MacroDialog(wx.Dialog):
     def create_controls(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.macro_input = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
+        macro_dir = Path.home() / ".config" / "macrodeck" / "macros"
+        macros = [file.name.removesuffix(".json") for file in macro_dir.glob("*.json")]
+
+        self.macro_input = wx.ComboBox(self.panel, choices=macros, style=wx.CB_DROPDOWN)
         self.macro_input.SetHint("Macro")
         sizer.Add(self.macro_input, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -98,23 +101,23 @@ class MacroDialog(wx.Dialog):
         self.scale_input = wx.SpinCtrlDouble(
             self.panel, min=0, max=2, inc=0.1, initial=1
         )
-        self.scale_input.SetDigits(2)  # Show 2 decimal places
+        self.scale_input.SetDigits(2)
         sizer.Add(self.scale_input, 0, wx.EXPAND | wx.ALL, 10)
 
         self.height_input = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
-        self.height_input.SetHint("Image height")
+        self.height_input.SetHint("Image height (%, px, auto)")
         sizer.Add(self.height_input, 0, wx.EXPAND | wx.ALL, 10)
 
         self.width_input = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
-        self.width_input.SetHint("Image width")
+        self.width_input.SetHint("Image width (%, px, auto)")
         sizer.Add(self.width_input, 0, wx.EXPAND | wx.ALL, 10)
 
         self.img_radius_input = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
-        self.img_radius_input.SetHint("Image radius")
+        self.img_radius_input.SetHint("Image radius, (%, px)")
         sizer.Add(self.img_radius_input, 0, wx.EXPAND | wx.ALL, 10)
 
         self.radius_input = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
-        self.radius_input.SetHint("Border radius")
+        self.radius_input.SetHint("Border radius (%, px)")
         sizer.Add(self.radius_input, 0, wx.EXPAND | wx.ALL, 10)
 
         submit_btn = wx.Button(self.panel, label="Save Macro")
@@ -174,7 +177,22 @@ class MainWindow(wx.Frame):
     def create_controls(self) -> None:
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.config_input = wx.TextCtrl(self.panel, value="", style=wx.TE_PROCESS_ENTER)
+        config_path = Path.home() / ".config" / "macrodeck" / "config.json"
+        existing = []
+        if config_path.exists():
+            with open(config_path, "r") as f:
+                existing = json.load(f)
+                if not isinstance(existing, list):
+                    existing = [existing]
+
+        configs = []
+        for conf in existing:
+            if "name" in conf:
+                configs.append(conf["name"])
+
+        self.config_input = wx.ComboBox(
+            self.panel, choices=configs, style=wx.CB_DROPDOWN
+        )
         self.config_input.SetHint("Config name")
         main_sizer.Add(self.config_input, 0, wx.EXPAND | wx.ALL, 10)
 
