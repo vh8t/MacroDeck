@@ -3,54 +3,82 @@
     "name": "iPad",
     "size": "2x3",
     "rotation": "horizontal",
-    "bg": "#ffd1f7",
+    "bg": "#99C1F1",
     "buttons": [
       {
         "macro": "setup_desktop",
         "text": "Setup Desktop",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       },
       {
         "macro": "focus_terminal",
         "text": "Terminal",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3,
-        "img-radius": "25%"
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       },
       {
         "macro": "focus_browser",
         "text": "Browser",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       },
       {
         "macro": "desktop_1",
         "text": "Desktop 1",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       },
       {
         "macro": "desktop_2",
         "text": "Desktop 2",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       },
       {
         "macro": "desktop_3",
         "text": "Desktop 3",
-        "bg": "#eee",
-        "fg": "#000",
-        "scale": 1.3
+        "bg": "#DEDDDA",
+        "fg": "#000000",
+        "scale": 1.2,
+        "img-height": "",
+        "img-width": "",
+        "img-radius": "",
+        "radius": "10%",
+        "active": "#9A9996"
       }
     ]
   },
-
   {
     "name": "Phone",
     "size": "1x3",

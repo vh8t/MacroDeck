@@ -1,3 +1,6 @@
+#include <fstream>
+#include <ios>
+#include <sstream>
 #define CROW_USE_BOOST 1
 
 #include "crow.h"
@@ -229,7 +232,39 @@ int main() {
     for (const auto &icon : icons) {
       if (icon[1].size() >= path.size() &&
           icon[1].substr(0, path.size()) == path) {
-        res.set_static_file_info_unsafe(icon[0]);
+        // res.set_static_file_info_unsafe(icon[0]);
+        // res.end();
+        // return;
+
+        std::ifstream file(icon[0], std::ios::binary);
+        if (!file.is_open()) {
+          res.code = 404;
+          res.write("File not found");
+          res.end();
+          return;
+        }
+
+        std::string extension;
+        size_t dotPos = icon[0].find_last_of('.');
+        if (dotPos != std::string::npos) {
+          extension = icon[0].substr(dotPos + 1);
+        }
+
+        static const std::unordered_map<std::string, std::string> mimeTypes = {
+            {"png", "image/png"},
+            {"jpg", "image/jpeg"},
+            {"jpeg", "image/jpeg"}};
+
+        auto it = mimeTypes.find(extension);
+        if (it != mimeTypes.end()) {
+          res.set_header("Content-Type", it->second);
+        } else {
+          res.set_header("Content-Type", "application/octet-stream");
+        }
+
+        std::ostringstream buffer;
+        buffer << file.rdbuf();
+        res.write(buffer.str());
         res.end();
         return;
       }
