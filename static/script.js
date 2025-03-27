@@ -86,7 +86,11 @@ function createGrid() {
     element.remove();
   }
 
-  if (!("size" in config)) {
+  if (
+    !("size" in config) ||
+    typeof config.size !== "string" ||
+    config.size.trim() === ""
+  ) {
     displayError(
       `Missing <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
     );
@@ -116,7 +120,11 @@ function createGrid() {
     }
   });
 
-  if ("bg" in config) {
+  if (
+    "bg" in config &&
+    typeof config.bg === "string" &&
+    config.bg.trim() !== ""
+  ) {
     document.body.style.backgroundColor = config.bg;
   }
 
@@ -182,13 +190,21 @@ function createGrid() {
       const img = document.createElement("img");
       img.src = icon;
 
-      if ("img-width" in btn) {
+      if (
+        "img-width" in btn &&
+        typeof btn["img-width"] === "string" &&
+        btn["img-width"].trim() !== ""
+      ) {
         img.style.width = btn["img-width"];
       } else {
         img.style.width = "100%";
       }
 
-      if ("img-height" in btn) {
+      if (
+        "img-height" in btn &&
+        typeof btn["img-height"] === "string" &&
+        btn["img-height"].trim() !== ""
+      ) {
         img.style.height = btn["img-height"];
       } else {
         img.style.height = "auto";
@@ -196,11 +212,19 @@ function createGrid() {
 
       button.appendChild(img);
 
-      if ("img-radius" in btn) {
+      if (
+        "img-radius" in btn &&
+        typeof btn["img-radius"] === "string" &&
+        btn["img-radius"].trim() !== ""
+      ) {
         img.style.borderRadius = btn["img-radius"];
       }
     } else {
-      if ("text" in btn) {
+      if (
+        "text" in btn &&
+        typeof btn.text === "string" &&
+        btn.text.trim() !== ""
+      ) {
         button.textContent = btn.text;
       } else {
         button.textContent = btn.macro;
@@ -220,19 +244,27 @@ function createGrid() {
     let radius = "25%";
     let active = "#0047a6";
 
-    if ("fg" in btn) {
+    if ("fg" in btn && typeof btn.fg === "string" && btn.fg.trim() !== "") {
       fg = btn.fg;
     }
 
-    if ("bg" in btn) {
+    if ("bg" in btn && typeof btn.bg === "string" && btn.bg.trim() !== "") {
       bg = btn.bg;
     }
 
-    if ("radius" in btn) {
+    if (
+      "radius" in btn &&
+      typeof btn.radius === "string" &&
+      btn.radius.trim() !== ""
+    ) {
       radius = btn.radius;
     }
 
-    if ("active" in btn) {
+    if (
+      "active" in btn &&
+      typeof btn.active === "string" &&
+      btn.active.trim() !== ""
+    ) {
       active = btn.active;
     }
 

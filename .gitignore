@@ -1,4 +1,5 @@
 .cache/
 build/
+venv/
 make
 compile_commands.json
