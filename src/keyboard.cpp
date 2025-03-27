@@ -399,6 +399,22 @@ void key_click(const std::string &combination) {
 
 void key_type(const std::string &text) {
   for (const char &c : text) {
-    key_click(std::string(1, c));
+    Key key = char_to_keycode(c);
+
+    if (key.keycode < 0) {
+      error("Unknown key: " + std::string(1, c));
+    } else {
+      if (key.shift) {
+        press_key(str_to_keycode("SHIFT").keycode);
+      }
+      press_key(key.keycode);
+
+      usleep(50000);
+
+      if (key.shift) {
+        release_key(str_to_keycode("SHIFT").keycode);
+      }
+      release_key(key.keycode);
+    }
   }
 }
