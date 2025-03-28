@@ -7,21 +7,17 @@ enum Opcode {
 
   // Application Control
   APP_OPEN,
+  APP_OPEN_IF_CLOSED,
   APP_CLOSE,
+  APP_CLOSE_IF_OPEN,
   APP_SWITCH,
+  APP_SWITCH_IF_OPEN,
 
   // Keyboard Actions
   KEY_PRESS,
   KEY_RELEASE,
   KEY_CLICK,
   KEY_TYPE,
-
-  // Media Control
-  MEDIA_PLAY,
-  MEDIA_PAUSE,
-  MEDIA_TOGGLE,
-  MEDIA_NEXT,
-  MEDIA_PREV,
 
   // Volume Control
   VOLUME_INC,

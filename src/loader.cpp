@@ -27,16 +27,22 @@ std::string get_home_dir() {
   return std::string("/home/") + pw->pw_name;
 }
 
-json load_config() {
-  std::string home_dir;
-  try {
-    home_dir = get_home_dir();
-  } catch (const std::exception &e) {
-    error(e.what());
-    return nullptr;
-  }
+json load_config(const std::string &path) {
+  fs::path config_path;
 
-  fs::path config_path = fs::path(home_dir) / ".config/macrodeck/config.json";
+  if (path == "-") {
+    std::string home_dir;
+    try {
+      home_dir = get_home_dir();
+    } catch (const std::exception &e) {
+      error(e.what());
+      return nullptr;
+    }
+
+    config_path = fs::path(home_dir) / ".config/macrodeck/config.json";
+  } else {
+    config_path = fs::path(path);
+  }
 
   if (!fs::exists(config_path)) {
     error("Failed to open config");

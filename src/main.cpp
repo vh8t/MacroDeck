@@ -109,6 +109,11 @@ int main(int argc, char **argv) {
       .help("get the current MacroDeck version")
       .flag();
 
+  program.add_argument("-c", "--config")
+      .help("use specifis config file")
+      .default_value(std::string("-"))
+      .metavar("<path>");
+
   program.add_argument("-h", "--help").help("show this message").flag();
 
   try {
@@ -121,7 +126,7 @@ int main(int argc, char **argv) {
 
   bool should_exit = false;
   if (program["--list-configs"] == true) {
-    json config = load_config();
+    json config = load_config("-");
 
     if (config == nullptr) {
       error("Could not load config from '~/.config/macrodeck/config.json'");
@@ -156,12 +161,14 @@ int main(int argc, char **argv) {
   if (should_exit)
     return 0;
 
+  std::string confing_path = program.get("--config");
+
   setup();
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
 
   log("Getting config");
-  json config = load_config();
+  json config = load_config(confing_path);
 
   if (config == nullptr) {
     error("Could not load config from '~/.config/macrodeck/config.json'");

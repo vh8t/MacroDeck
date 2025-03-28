@@ -1,0 +1,11 @@
+{
+  "macro": [
+    ["app_switch", "zen"],
+    ["wait", 500],
+    ["key_click", "CTRL t"],
+    ["wait", 500],
+    ["key_type", "wikipedia.org"],
+    ["wait", 500],
+    ["key_click", "ENTER"]
+  ]
+}

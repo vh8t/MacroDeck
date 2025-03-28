@@ -4,10 +4,16 @@
 Opcode str_to_op(const std::string &str) {
   if (str == "app_open")
     return APP_OPEN;
+  if (str == "app_open_if_closed")
+    return APP_OPEN_IF_CLOSED;
   if (str == "app_close")
     return APP_CLOSE;
+  if (str == "app_close_if_open")
+    return APP_CLOSE_IF_OPEN;
   if (str == "app_switch")
     return APP_SWITCH;
+  if (str == "app_switch_if_open")
+    return APP_SWITCH_IF_OPEN;
   if (str == "key_press")
     return KEY_PRESS;
   if (str == "key_release")
@@ -16,16 +22,6 @@ Opcode str_to_op(const std::string &str) {
     return KEY_CLICK;
   if (str == "key_type")
     return KEY_TYPE;
-  if (str == "media_play")
-    return MEDIA_PLAY;
-  if (str == "media_pause")
-    return MEDIA_PAUSE;
-  if (str == "media_toggle")
-    return MEDIA_TOGGLE;
-  if (str == "media_next")
-    return MEDIA_NEXT;
-  if (str == "media_prev")
-    return MEDIA_PREV;
   if (str == "volume_inc")
     return VOLUME_INC;
   if (str == "volume_dec")

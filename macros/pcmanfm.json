@@ -1,0 +1,8 @@
+{
+  "macro": [
+    ["key_click", "SUPER d"],
+    ["wait", 500],
+    ["key_type", "PCMan File Manager"],
+    ["key_click", "ENTER"]
+  ]
+}
