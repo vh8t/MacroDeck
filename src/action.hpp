@@ -1,5 +1,6 @@
 #pragma once
 
+#include "api.hpp"
 #include "apps.hpp"
 #include "keyboard.hpp"
 #include "log.hpp"
@@ -114,16 +115,41 @@ struct Action {
       }
       key_type(s(0));
     } break;
-    case MEDIA_PLAY:
-      break;
-    case MEDIA_PAUSE:
-      break;
-    case MEDIA_TOGGLE:
-      break;
-    case MEDIA_NEXT:
-      break;
-    case MEDIA_PREV:
-      break;
+    case MEDIA_PLAY: {
+      if (args.size() != 0) {
+        error("Invalid argument for MEDIA_PLAY");
+        return;
+      }
+      media_play();
+    } break;
+    case MEDIA_PAUSE: {
+      if (args.size() != 0) {
+        error("Invalid argument for MEDIA_PAUSE");
+        return;
+      }
+      media_pause();
+    } break;
+    case MEDIA_TOGGLE: {
+      if (args.size() != 0) {
+        error("Invalid argument for MEDIA_TOGGLE");
+        return;
+      }
+      media_toggle();
+    } break;
+    case MEDIA_NEXT: {
+      if (args.size() != 0) {
+        error("Invalid argument for MEDIA_NEXT");
+        return;
+      }
+      media_next();
+    } break;
+    case MEDIA_PREV: {
+      if (args.size() != 0) {
+        error("Invalid argument for MEDIA_PREV");
+        return;
+      }
+      media_prev();
+    } break;
     case VOLUME_INC: {
       if (args.size() != 1 || is_str(0)) {
         error("Invalid argument for VOLUME_INC");
