@@ -1,9 +1,416 @@
 #!/usr/bin/env python3
 
 import json
+import random
 from pathlib import Path
 
 import wx
+
+NOUNS = [
+    "people",
+    "history",
+    "way",
+    "art",
+    "world",
+    "information",
+    "map",
+    "two",
+    "family",
+    "government",
+    "health",
+    "system",
+    "computer",
+    "meat",
+    "year",
+    "thanks",
+    "music",
+    "person",
+    "reading",
+    "method",
+    "data",
+    "food",
+    "understanding",
+    "theory",
+    "law",
+    "bird",
+    "literature",
+    "problem",
+    "software",
+    "control",
+    "knowledge",
+    "power",
+    "ability",
+    "economics",
+    "love",
+    "internet",
+    "television",
+    "science",
+    "library",
+    "nature",
+    "fact",
+    "product",
+    "idea",
+    "temperature",
+    "investment",
+    "area",
+    "society",
+    "activity",
+    "story",
+    "industry",
+    "media",
+    "thing",
+    "oven",
+    "community",
+    "definition",
+    "safety",
+    "quality",
+    "development",
+    "language",
+    "management",
+    "player",
+    "variety",
+    "video",
+    "week",
+    "security",
+    "country",
+    "exam",
+    "movie",
+    "organization",
+    "equipment",
+    "physics",
+    "analysis",
+    "policy",
+    "series",
+    "thought",
+    "basis",
+    "boyfriend",
+    "direction",
+    "strategy",
+    "technology",
+    "army",
+    "camera",
+    "freedom",
+    "paper",
+    "environment",
+    "child",
+    "instance",
+    "month",
+    "truth",
+    "marketing",
+    "university",
+    "writing",
+    "article",
+    "department",
+    "difference",
+    "goal",
+    "news",
+    "audience",
+    "fishing",
+    "growth",
+    "income",
+    "marriage",
+    "user",
+    "combination",
+    "failure",
+    "meaning",
+    "medicine",
+    "philosophy",
+    "teacher",
+    "communication",
+    "night",
+    "chemistry",
+    "disease",
+    "disk",
+    "energy",
+    "nation",
+    "road",
+    "role",
+    "soup",
+    "advertising",
+    "location",
+    "success",
+    "addition",
+    "apartment",
+    "education",
+    "math",
+    "moment",
+    "painting",
+    "politics",
+    "attention",
+    "decision",
+    "event",
+    "property",
+    "shopping",
+    "student",
+    "wood",
+    "competition",
+    "distribution",
+    "entertainment",
+    "office",
+    "population",
+    "president",
+    "unit",
+    "category",
+    "cigarette",
+    "context",
+    "introduction",
+    "opportunity",
+    "performance",
+    "driver",
+    "flight",
+    "length",
+    "magazine",
+    "newspaper",
+    "relationship",
+    "teaching",
+    "cell",
+    "dealer",
+    "finding",
+    "lake",
+    "member",
+    "message",
+    "phone",
+    "scene",
+    "appearance",
+    "association",
+    "concept",
+    "customer",
+    "death",
+    "discussion",
+    "housing",
+    "inflation",
+    "insurance",
+    "mood",
+    "woman",
+    "advice",
+    "blood",
+    "effort",
+    "expression",
+    "importance",
+    "opinion",
+    "payment",
+    "reality",
+    "responsibility",
+    "situation",
+    "skill",
+    "statement",
+    "wealth",
+    "application",
+    "city",
+    "county",
+    "depth",
+    "estate",
+    "foundation",
+    "grandmother",
+    "heart",
+    "perspective",
+    "photo",
+    "recipe",
+    "studio",
+]
+
+ADJECTIVES = [
+    "happy",
+    "sad",
+    "angry",
+    "excited",
+    "tired",
+    "hungry",
+    "thirsty",
+    "bored",
+    "confused",
+    "scared",
+    "nervous",
+    "brave",
+    "calm",
+    "careful",
+    "lazy",
+    "busy",
+    "friendly",
+    "kind",
+    "polite",
+    "rude",
+    "smart",
+    "dumb",
+    "rich",
+    "poor",
+    "tall",
+    "short",
+    "fat",
+    "thin",
+    "young",
+    "old",
+    "strong",
+    "weak",
+    "fast",
+    "slow",
+    "quiet",
+    "loud",
+    "clean",
+    "dirty",
+    "beautiful",
+    "ugly",
+    "hot",
+    "cold",
+    "warm",
+    "cool",
+    "dry",
+    "wet",
+    "heavy",
+    "light",
+    "hard",
+    "soft",
+    "easy",
+    "difficult",
+    "simple",
+    "complicated",
+    "open",
+    "closed",
+    "full",
+    "empty",
+    "new",
+    "old",
+    "big",
+    "small",
+    "large",
+    "tiny",
+    "wide",
+    "narrow",
+    "deep",
+    "shallow",
+    "high",
+    "low",
+    "near",
+    "far",
+    "bright",
+    "dark",
+    "early",
+    "late",
+    "safe",
+    "dangerous",
+    "healthy",
+    "sick",
+    "delicious",
+    "disgusting",
+    "sweet",
+    "sour",
+    "bitter",
+    "salty",
+    "spicy",
+    "fresh",
+    "stale",
+    "interesting",
+    "boring",
+    "funny",
+    "serious",
+    "annoying",
+    "pleasant",
+    "unpleasant",
+    "beautiful",
+    "ugly",
+    "cute",
+    "pretty",
+    "handsome",
+    "elegant",
+    "messy",
+    "neat",
+    "busy",
+    "free",
+    "expensive",
+    "cheap",
+    "valuable",
+    "worthless",
+    "popular",
+    "famous",
+    "unknown",
+    "common",
+    "rare",
+    "unique",
+    "different",
+    "similar",
+    "same",
+    "opposite",
+    "important",
+    "unimportant",
+    "necessary",
+    "unnecessary",
+    "possible",
+    "impossible",
+    "real",
+    "fake",
+    "true",
+    "false",
+    "correct",
+    "incorrect",
+    "fair",
+    "unfair",
+    "honest",
+    "dishonest",
+    "legal",
+    "illegal",
+    "logical",
+    "illogical",
+    "loyal",
+    "disloyal",
+    "normal",
+    "abnormal",
+    "regular",
+    "irregular",
+    "strong",
+    "weak",
+    "powerful",
+    "powerless",
+    "effective",
+    "ineffective",
+    "efficient",
+    "inefficient",
+    "busy",
+    "lazy",
+    "active",
+    "inactive",
+    "creative",
+    "uncreative",
+    "happy",
+    "unhappy",
+    "optimistic",
+    "pessimistic",
+    "hopeful",
+    "hopeless",
+    "confident",
+    "shy",
+    "independent",
+    "dependent",
+    "sensitive",
+    "insensitive",
+    "patient",
+    "impatient",
+    "gentle",
+    "rough",
+    "quiet",
+    "noisy",
+    "relaxed",
+    "tense",
+    "flexible",
+    "inflexible",
+    "generous",
+    "stingy",
+    "grateful",
+    "ungrateful",
+    "brave",
+    "cowardly",
+    "wise",
+    "foolish",
+    "reliable",
+    "unreliable",
+    "organized",
+    "disorganized",
+    "careful",
+    "careless",
+    "curious",
+    "indifferent",
+    "charming",
+    "boring",
+]
 
 
 class ConfigSaveDialog(wx.Dialog):
@@ -31,6 +438,36 @@ class ConfigSaveDialog(wx.Dialog):
         sizer.Add(delete_btn, 0, wx.ALL | wx.CENTER, 5)
 
         panel.SetSizer(sizer)
+
+    def on_choice(self, choice):
+        self.choice = choice
+        self.EndModal(wx.ID_OK)
+
+
+class RemoveMacroDialog(wx.Dialog):
+    def __init__(self, parent, macros):
+        super().__init__(parent, title="Remove Macro", size=(200, 110))
+        self.macros = macros
+        self.choice = None
+        self.panel = wx.Panel(self)
+        self.create_controls()
+        self.Centre()
+
+    def create_controls(self):
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.macro_choice = wx.Choice(self.panel, choices=self.macros)
+        self.macro_choice.SetSelection(0)
+        sizer.Add(self.macro_choice, 0, wx.EXPAND | wx.ALL, 10)
+
+        delete_btn = wx.Button(self.panel, label="Delete")
+        delete_btn.Bind(
+            wx.EVT_BUTTON,
+            lambda _: self.on_choice(self.macro_choice.GetStringSelection()),
+        )
+        sizer.Add(delete_btn, 0, wx.ALL | wx.CENTER, 5)
+
+        self.panel.SetSizer(sizer)
 
     def on_choice(self, choice):
         self.choice = choice
@@ -129,8 +566,8 @@ class MacroDialog(wx.Dialog):
     def on_submit(self, event):
         macro = self.macro_input.GetValue()
         if macro.strip() == "":
-            event.Skip()
             wx.MessageBox("macro field required", "Error", wx.OK | wx.ICON_ERROR)
+            event.Skip()
             return
 
         self.settings = {
@@ -158,7 +595,7 @@ class MainWindow(wx.Frame):
     def __init__(self, parent, title):
         style = wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
         super(MainWindow, self).__init__(
-            parent, title=title, size=(300, 370), style=style
+            parent, title=title, size=(300, 410), style=style
         )
 
         self.panel = wx.Panel(self)
@@ -234,13 +671,37 @@ class MainWindow(wx.Frame):
         add_macro_btn.Bind(wx.EVT_BUTTON, self.on_open_dialog)
         button_sizer.Add(add_macro_btn, 1, wx.EXPAND | wx.RIGHT, 5)
 
+        rem_macro_btn = wx.Button(self.panel, label="Remove Macro")
+        rem_macro_btn.Bind(wx.EVT_BUTTON, self.on_open_dialog_rem)
+        button_sizer.Add(rem_macro_btn, 1, wx.EXPAND | wx.LEFT, 5)
+
+        main_sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 5)
+
         submit_btn = wx.Button(self.panel, label="Save Configuration")
         submit_btn.Bind(wx.EVT_BUTTON, self.on_submit)
-        button_sizer.Add(submit_btn, 1, wx.EXPAND | wx.LEFT, 5)
-
-        main_sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 15)
+        main_sizer.Add(submit_btn, 1, wx.CENTER | wx.ALL, 10)
 
         self.panel.SetSizer(main_sizer)
+
+    def on_open_dialog_rem(self, event):
+        if len(self.config["buttons"]) == 0:
+            wx.MessageBox("No macros present", "Error", wx.OK | wx.ICON_ERROR)
+            event.Skip()
+            return
+
+        dialog = RemoveMacroDialog(
+            self, [button["macro"] for button in self.config["buttons"]]
+        )
+        if dialog.ShowModal() == wx.ID_OK:
+            macro = dialog.choice
+            remove = []
+            for i, btn in enumerate(self.config["buttons"]):
+                if btn["macro"] == macro:
+                    remove.append(i)
+            remove.sort(reverse=True)
+            for i in remove:
+                self.config["buttons"].pop(i)
+        dialog.Destroy()
 
     def on_open_dialog(self, _):
         dialog = MacroDialog(self)
@@ -252,6 +713,15 @@ class MainWindow(wx.Frame):
     def on_submit(self, _) -> None:
         rows = self.rows_input.GetValue()
         cols = self.cols_input.GetValue()
+
+        name = self.config_input.GetValue().strip()
+        if name == "":
+            name = (
+                random.choice(ADJECTIVES).capitalize()
+                + random.choice(NOUNS).capitalize()
+            )
+
+        print(name)
 
         self.config["name"] = self.config_input.GetValue()
         self.config["size"] = f"{rows}x{cols}"
