@@ -97,22 +97,22 @@ int main(int argc, char **argv) {
                                    std::string(VERSION) + "-" + TAG,
                                    argparse::default_arguments::none);
 
-  program.add_argument("-V", "--verbose")
-      .help("increase output verbosity")
-      .flag();
-
   program.add_argument("--list-configs")
       .help("list all config names from config file")
-      .flag();
-
-  program.add_argument("-v", "--version")
-      .help("get the current MacroDeck version")
       .flag();
 
   program.add_argument("-c", "--config")
       .help("use specifis config file")
       .default_value(std::string("-"))
       .metavar("<path>");
+
+  program.add_argument("-V", "--verbose")
+      .help("increase output verbosity")
+      .flag();
+
+  program.add_argument("-v", "--version")
+      .help("get the current MacroDeck version")
+      .flag();
 
   program.add_argument("-h", "--help").help("show this message").flag();
 
