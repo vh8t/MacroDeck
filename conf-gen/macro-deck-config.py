@@ -595,7 +595,7 @@ class MainWindow(wx.Frame):
     def __init__(self, parent, title):
         style = wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
         super(MainWindow, self).__init__(
-            parent, title=title, size=(300, 410), style=style
+            parent, title=title, size=(300, 395), style=style
         )
 
         self.name = (
@@ -680,11 +680,11 @@ class MainWindow(wx.Frame):
         rem_macro_btn.Bind(wx.EVT_BUTTON, self.on_open_dialog_rem)
         button_sizer.Add(rem_macro_btn, 1, wx.EXPAND | wx.LEFT, 5)
 
-        main_sizer.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 5)
+        main_sizer.Add(button_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         submit_btn = wx.Button(self.panel, label="Save Configuration")
         submit_btn.Bind(wx.EVT_BUTTON, self.on_submit)
-        main_sizer.Add(submit_btn, 1, wx.CENTER | wx.ALL, 10)
+        main_sizer.Add(submit_btn, 0, wx.EXPAND | wx.ALL, 10)
 
         self.panel.SetSizer(main_sizer)
 
