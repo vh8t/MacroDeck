@@ -598,6 +598,10 @@ class MainWindow(wx.Frame):
             parent, title=title, size=(300, 410), style=style
         )
 
+        self.name = (
+            random.choice(ADJECTIVES).capitalize() + random.choice(NOUNS).capitalize()
+        )
+
         self.panel = wx.Panel(self)
         self.create_controls()
         self.Center()
@@ -631,6 +635,7 @@ class MainWindow(wx.Frame):
             self.panel, choices=configs, style=wx.CB_DROPDOWN
         )
         self.config_input.SetHint("Config name")
+        self.config_input.SetValue(self.name)
         main_sizer.Add(self.config_input, 0, wx.EXPAND | wx.ALL, 10)
 
         grid_label = wx.StaticText(self.panel, label="Select grid size (rows x cols):")
@@ -716,12 +721,7 @@ class MainWindow(wx.Frame):
 
         name = self.config_input.GetValue().strip()
         if name == "":
-            name = (
-                random.choice(ADJECTIVES).capitalize()
-                + random.choice(NOUNS).capitalize()
-            )
-
-        print(name)
+            name = self.name
 
         self.config["name"] = self.config_input.GetValue()
         self.config["size"] = f"{rows}x{cols}"
