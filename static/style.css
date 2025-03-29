@@ -1,23 +1,19 @@
 :root {
-  /* === Base Colors === */
-  --color-background: #121212; /* Main background */
-  --color-surface: #1e1e1e; /* Cards, panels, modals */
-  --color-popup: #252525; /* Dropdowns, tooltips */
+  --color-background: #121212;
+  --color-surface: #1e1e1e;
+  --color-popup: #252525;
 
-  /* === Button Colors === */
-  --color-button: #007bff; /* Default button */
-  --color-button-hover: #005ecb; /* Hover state */
-  --color-button-active: #0047a6; /* Clicked state */
-  --color-button-disabled: #3a3a3a; /* Disabled button */
+  --color-button: #007bff;
+  --color-button-hover: #005ecb;
+  --color-button-active: #0047a6;
+  --color-button-disabled: #3a3a3a;
 
-  /* === Text Colors === */
-  --color-text-primary: #ffffff; /* Main text */
-  --color-text-secondary: #bbbbbb; /* Less important text */
-  --color-text-disabled: #777777; /* Muted text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #bbbbbb;
+  --color-text-disabled: #777777;
 
-  /* === Border & Shadow Colors === */
-  --color-border: #333333; /* Borders */
-  --color-shadow: rgba(0, 0, 0, 0.3); /* Shadows */
+  --color-border: #333333;
+  --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -27,6 +23,38 @@ body {
   align-items: center;
   height: 100vh;
   background: var(--color-background);
+}
+
+button,
+input[type="password"] {
+  width: 260px;
+  padding: 7px 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-primary);
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.05);
+}
+
+button {
+  width: 292px;
+  cursor: pointer;
+}
+
+input {
+  outline: none;
+}
+
+button:active,
+input[type="password"]:focus {
+  background: var(--color-background);
+}
+
+button:disabled {
+  background-color: var(--color-button-disabled) !important;
 }
 
 #config-picker {
@@ -39,15 +67,25 @@ body {
   height: 100vh;
 }
 
-#config-picker button {
-  padding: 3px 10px;
-  border-radius: 5px;
-}
-
 #grid-container {
   display: grid;
   width: 100vw;
   height: 100vh;
+}
+
+#auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  background: var(--color-background);
+  backdrop-filter: blur(12px);
+}
+
+#auth-container button {
+  margin-top: 15px;
 }
 
 .grid-cell {
@@ -56,7 +94,7 @@ body {
   align-items: center;
 }
 
-button {
+.grid-cell button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -66,10 +104,6 @@ button {
   font-size: 1rem;
   cursor: pointer;
   border-radius: 25%;
-}
-
-button:disabled {
-  background-color: var(--color-button-disabled) !important;
 }
 
 .error {

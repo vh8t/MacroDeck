@@ -1,3 +1,4 @@
+#include <mutex>
 #define CROW_USE_BOOST 1
 
 #include "argparse.hpp"
@@ -31,6 +32,9 @@ namespace fs = std::filesystem;
 
 std::unordered_map<std::string, Macro *> loaded_macros;
 std::vector<std::array<std::string, 2>> icons;
+
+std::unordered_map<crow::websocket::connection *, bool> authenticated_devices;
+std::mutex auth_mutex;
 
 std::string get_base_dir() {
   std::string exe_dir = fs::canonical("/proc/self/exe").parent_path().string();
@@ -106,6 +110,11 @@ int main(int argc, char **argv) {
       .default_value(std::string("-"))
       .metavar("<path>");
 
+  program.add_argument("-a", "--auth")
+      .help("set a authentication password")
+      .default_value(std::string(""))
+      .metavar("<password>");
+
   program.add_argument("-V", "--verbose")
       .help("increase output verbosity")
       .flag();
@@ -162,6 +171,7 @@ int main(int argc, char **argv) {
     return 0;
 
   std::string confing_path = program.get("--config");
+  std::string password = program.get("--auth");
 
   setup();
   std::atexit(cleanup);
@@ -253,31 +263,56 @@ int main(int argc, char **argv) {
 
   CROW_WEBSOCKET_ROUTE(app, "/ws")
       .onopen([&](crow::websocket::connection &conn) {
+        std::lock_guard<std::mutex> lock(auth_mutex);
+        if (password.empty()) {
+          authenticated_devices[&conn] = true;
+          conn.send_text("auth-not-required");
+        } else {
+          authenticated_devices[&conn] = false;
+          conn.send_text("auth-required");
+        }
         log("Opened connection with: " + conn.get_remote_ip());
       })
 
       .onclose([&](crow::websocket::connection &conn, const std::string &reason,
                    uint16_t) {
+        std::lock_guard<std::mutex> lock(auth_mutex);
+        authenticated_devices.erase(&conn);
         log("Closed connection with: " + conn.get_remote_ip() +
             " with reason: " + reason);
       })
 
       .onmessage([&](crow::websocket::connection &conn, const std::string &data,
                      bool is_binary) {
-        if (!is_binary) {
-          if (data == "get-config") {
-            std::string jsonString = config.dump();
-            conn.send_text("config:" + jsonString);
-          } else if (data.length() > 10 &&
-                     data.compare(0, 10, "run-macro:") == 0) {
-            std::string macro_name = data.substr(10);
+        std::lock_guard<std::mutex> lock(auth_mutex);
 
-            if (loaded_macros.find(macro_name) != loaded_macros.end()) {
-              info("Running macro: " + macro_name);
-              loaded_macros[macro_name]->run();
-            } else {
-              error("Invalid macro: " + macro_name);
+        if (authenticated_devices[&conn]) {
+          if (!is_binary) {
+            if (data == "get-config") {
+              std::string jsonString = config.dump();
+              conn.send_text("config:" + jsonString);
+            } else if (data.length() > 10 &&
+                       data.substr(0, 10) == "run-macro:") {
+              std::string macro_name = data.substr(10);
+
+              if (loaded_macros.find(macro_name) != loaded_macros.end()) {
+                info("Running macro: " + macro_name);
+                loaded_macros[macro_name]->run();
+              } else {
+                error("Invalid macro: " + macro_name);
+              }
             }
+          }
+        } else {
+          if (data.length() > 5 && data.substr(0, 5) == "auth:" &&
+              data.substr(5) == password) {
+            info("Client " + conn.get_remote_ip() + " authenticated");
+            authenticated_devices[&conn] = true;
+            conn.send_text("auth-success");
+          } else {
+            info("Failed to authenticate with message: " + data);
+            conn.send_text("auth-fail");
+            conn.close();
           }
         }
       });
@@ -306,9 +341,6 @@ int main(int argc, char **argv) {
     for (const auto &icon : icons) {
       if (icon[1].size() >= path.size() &&
           icon[1].substr(0, path.size()) == path) {
-        // res.set_static_file_info_unsafe(icon[0]);
-        // res.end();
-        // return;
 
         std::ifstream file(icon[0], std::ios::binary);
         if (!file.is_open()) {
