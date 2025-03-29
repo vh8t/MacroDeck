@@ -1,53 +1,60 @@
 const host = window.location.host;
 const socket = new WebSocket(`ws://${host}/ws`);
 
-var config;
+var authenticated = false;
+
+var original_config = null;
+var current_confg = null;
+
 const cooldowns = {};
 
-socket.onopen = () => {
-  setTimeout(() => {
-    socket.send("get-config");
-  }, 150);
-};
+socket.addEventListener("message", (event) => {
+  const message = event.data;
 
-socket.onmessage = (e) => {
-  const message = e.data;
-
-  if (message.startsWith("config:")) {
-    const raw_config = message.slice(7);
-
+  if (message === "auth-required") {
+    authenticate();
+  } else if (message === "auth-not-required" || message === "auth-success") {
+    authenticate = true;
+    safeSend("get-config");
+  } else if (message.startsWith("config:")) {
     try {
-      config = JSON.parse(raw_config);
-      if (Array.isArray(config)) {
-        configPicker();
+      original_config = JSON.parse(message.slice(7));
+
+      if (Array.isArray(original_config)) {
+        pickConfig();
       } else {
+        current_confg = original_config;
         createGrid();
       }
     } catch (error) {
       console.error("Failed to parse JSON:", error);
-      displayError("Failed to parse JSON:" + error.toString());
     }
-  }
-};
-
-socket.onerror = (e) => {
-  console.error("WebSocket error:", e);
-};
-
-socket.onclose = () => {
-  console.log("WebSocket connection closed");
-};
-
-window.addEventListener("resize", () => {
-  if (Array.isArray(config)) {
-    configPicker();
-  } else {
-    createGrid();
   }
 });
 
-function configPicker() {
-  let element;
+socket.addEventListener("error", (event) => {
+  console.error("WebSocket error:", event);
+});
+
+socket.addEventListener("close", () => {
+  console.log("WebSocket connection closed");
+
+  authenticated = false;
+  original_config = null;
+  current_confg = null;
+});
+
+function safeSend(message) {
+  if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
+    socket.send(message);
+  } else {
+    console.error("Could not send message to socket");
+  }
+}
+
+function removeElements() {
+  let element = null;
+
   if ((element = document.getElementById("grid-container"))) {
     element.remove();
   }
@@ -56,16 +63,48 @@ function configPicker() {
     element.remove();
   }
 
+  if ((element = document.getElementById("auth-container"))) {
+    element.remove();
+  }
+}
+
+function authenticate() {
+  removeElements();
+
+  const authContainer = document.createElement("div");
+  authContainer.id = "auth-container";
+
+  const input = document.createElement("input");
+  input.placeholder = "Enter password";
+  input.type = "password";
+  input.id = "auth-input";
+
+  const button = document.createElement("button");
+  button.innerText = "Authenticate";
+
+  button.addEventListener("click", () => {
+    const password = input.value.trim();
+    safeSend(`auth:${password}`);
+  });
+
+  authContainer.appendChild(input);
+  authContainer.appendChild(button);
+  document.body.appendChild(authContainer);
+}
+
+function pickConfig() {
+  removeElements();
+
   const picker = document.createElement("div");
   picker.id = "config-picker";
 
-  config.forEach((obj) => {
+  original_config.forEach((obj) => {
     if ("name" in obj) {
       const button = document.createElement("button");
-      button.textContent = obj.name;
+      button.innerText = obj.name;
 
       button.addEventListener("click", () => {
-        config = obj;
+        current_confg = obj;
         createGrid();
       });
 
@@ -77,19 +116,16 @@ function configPicker() {
 }
 
 function createGrid() {
-  let element;
-  if ((element = document.getElementById("grid-container"))) {
-    element.remove();
-  }
+  removeElements();
 
-  if ((element = document.getElementById("config-picker"))) {
-    element.remove();
+  if (current_confg === null) {
+    return;
   }
 
   if (
-    !("size" in config) ||
-    typeof config.size !== "string" ||
-    config.size.trim() === ""
+    !("size" in current_confg) ||
+    typeof current_confg.size !== "string" ||
+    current_confg.size.trim() === ""
   ) {
     displayError(
       `Missing <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
@@ -97,35 +133,26 @@ function createGrid() {
     return;
   }
 
-  if (!/^\d+x\d+$/.test(config.size)) {
+  if (!/^\d+x\d+$/.test(current_confg.size)) {
     displayError(
       `Invalid <span style="font-family: monospace;">size</span> property in <span style="font-family: monospace;">config.json</span>`,
     );
     return;
   }
 
-  if (!("buttons" in config)) {
+  if (!("buttons" in current_confg) || !Array.isArray(current_confg.buttons)) {
     displayError(
       `Missing <span style="font-family: monospace;">buttons</span> property in <span style="font-family: monospace;">config.json</span>`,
     );
     return;
   }
 
-  config.buttons.forEach((button) => {
-    if (!("macro" in button)) {
-      displayError(
-        `Missing button <span style="font-family: monospace;">macro</span> property in <span style="font-family: monospace;">config.json</span>`,
-      );
-      return;
-    }
-  });
-
   if (
-    "bg" in config &&
-    typeof config.bg === "string" &&
-    config.bg.trim() !== ""
+    "bg" in current_confg &&
+    typeof current_confg.bg === "string" &&
+    current_confg.bg.trim() !== ""
   ) {
-    document.body.style.backgroundColor = config.bg;
+    document.body.style.backgroundColor = current_confg.bg;
   }
 
   const container = document.createElement("div");
@@ -138,15 +165,21 @@ function createGrid() {
       ? Math.floor(screenHeight * 0.1)
       : Math.floor(screenWidth * 0.1);
 
-  let [rows, cols] = config.size.split("x").map(Number);
+  let [rows, cols] = current_confg.size.split("x").map(Number);
   let flipped = false;
 
-  if ("rotation" in config) {
-    if (config.rotation === "horizontal" && screenHeight > screenWidth) {
-      [cols, rows] = config.size.split("x").map(Number);
+  if (
+    "rotation" in current_confg &&
+    typeof current_confg.rotation === "string"
+  ) {
+    if (current_confg.rotation === "horizontal" && screenHeight > screenWidth) {
+      [cols, rows] = current_confg.size.split("x").map(Number);
       flipped = true;
-    } else if (config.rotation == "vertical" && screenWidth > screenHeight) {
-      [cols, rows] = config.size.split("x").map(Number);
+    } else if (
+      current_confg.rotation === "vertical" &&
+      screenHeight < screenWidth
+    ) {
+      [cols, rows] = current_confg.size.split("x").map(Number);
       flipped = true;
     }
   }
@@ -160,11 +193,20 @@ function createGrid() {
   container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-  container.innerHTML = "";
-
-  const loopLen = Math.min(config.buttons.length, rows * cols);
+  const loopLen = Math.min(current_confg.buttons.length, rows * cols);
   for (let i = 0; i < loopLen; i++) {
-    const btn = config.buttons[i];
+    const btn = current_confg.buttons[i];
+
+    if (
+      !("macro" in btn) ||
+      typeof btn.macro !== "string" ||
+      btn.macro.trim() === ""
+    ) {
+      displayError(
+        `Missing button <span style="font-family: monospace;">macro</span> property in <span style="font-family: monospace;">config.json</span>`,
+      );
+      return;
+    }
 
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
@@ -207,10 +249,8 @@ function createGrid() {
       ) {
         img.style.height = btn["img-height"];
       } else {
-        img.style.height = "auto";
+        img.style.height = "100%";
       }
-
-      button.appendChild(img);
 
       if (
         "img-radius" in btn &&
@@ -218,31 +258,28 @@ function createGrid() {
         btn["img-radius"].trim() !== ""
       ) {
         img.style.borderRadius = btn["img-radius"];
+      } else {
+        img.style.borderRadius = "25%";
       }
+
+      button.appendChild(img);
     } else {
       if (
         "text" in btn &&
         typeof btn.text === "string" &&
         btn.text.trim() !== ""
       ) {
-        button.textContent = btn.text;
+        button.innerText = btn.text;
       } else {
-        button.textContent = btn.macro;
+        button.innerText = btn.macro;
       }
-    }
-
-    if ("scale" in btn && typeof btn.scale === "number") {
-      button.style.width = `${Math.round(squareSize * btn.scale)}px`;
-      button.style.height = `${Math.round(squareSize * btn.scale)}px`;
-    } else {
-      button.style.width = `${squareSize}px`;
-      button.style.height = `${squareSize}px`;
     }
 
     let fg = "#ffffff";
     let bg = "#007bff";
     let radius = "25%";
     let active = "#0047a6";
+    let size = `${squareSize}px`;
 
     if ("fg" in btn && typeof btn.fg === "string" && btn.fg.trim() !== "") {
       fg = btn.fg;
@@ -268,18 +305,27 @@ function createGrid() {
       active = btn.active;
     }
 
+    if ("scale" in btn && typeof btn.scale === "number") {
+      size = `${Math.round(squareSize * btn.scale)}px`;
+    }
+
     button.style.color = fg;
-    button.style.backgroundColor = btn.bg;
-    button.style.borderRadius = btn.radius;
-    button.onmousedown = () => {
+    button.style.backgroundColor = bg;
+    button.style.borderRadius = radius;
+    button.style.width = size;
+    button.style.height = size;
+
+    button.addEventListener("mousedown", () => {
       button.style.backgroundColor = active;
-    };
-    button.onmouseup = () => {
+    });
+
+    button.addEventListener("mouseup", () => {
       button.style.backgroundColor = bg;
-    };
-    button.onmouseout = () => {
+    });
+
+    button.addEventListener("mouseout", () => {
       button.style.backgroundColor = bg;
-    };
+    });
 
     cell.appendChild(button);
     container.appendChild(cell);
@@ -292,6 +338,8 @@ function createGrid() {
 }
 
 function handleButtonClick(event) {
+  event.preventDefault();
+
   const button = event.currentTarget;
   const buttonId = button.getAttribute("data-id");
   const macro = button.getAttribute("data-macro");
@@ -303,8 +351,7 @@ function handleButtonClick(event) {
   button.disabled = true;
   cooldowns[buttonId] = true;
 
-  socket.send(`run-macro:${macro}`);
-  console.log(macro);
+  safeSend(`run-macro:${macro}`);
 
   setTimeout(() => {
     button.disabled = false;
@@ -313,12 +360,11 @@ function handleButtonClick(event) {
 }
 
 function displayError(message) {
+  removeElements();
+
   const text = document.createElement("p");
   text.classList.add("error");
   text.innerHTML = message;
-
-  const container = document.getElementById("grid-container");
-  container.innerHTML = "";
 
   container.appendChild(text);
 }
