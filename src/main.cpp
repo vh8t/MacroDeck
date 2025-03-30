@@ -1,4 +1,3 @@
-#include <mutex>
 #define CROW_USE_BOOST 1
 
 #include "argparse.hpp"
@@ -18,6 +17,7 @@
 #include <ifaddrs.h>
 #include <ios>
 #include <iostream>
+#include <mutex>
 #include <netinet/in.h>
 #include <sstream>
 #include <string>
