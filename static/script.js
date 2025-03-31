@@ -259,7 +259,7 @@ function createGrid() {
       ) {
         img.style.borderRadius = btn["img-radius"];
       } else {
-        img.style.borderRadius = "25%";
+        img.style.borderRadius = "0";
       }
 
       button.appendChild(img);
