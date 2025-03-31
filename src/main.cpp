@@ -191,6 +191,15 @@ int main(int argc, char **argv) {
   std::string confing_path = program.get("--config");
   std::string password = program.get("--auth");
 
+  const char *password_env = getenv("MACRODECK_AUTH");
+  if (password.empty() && password_env) {
+    password = password_env;
+  }
+
+  if (!password.empty()) {
+    info("User authentication enabled");
+  }
+
   setup();
   std::atexit(cleanup);
   std::signal(SIGINT, sig_handler);
