@@ -25,7 +25,7 @@
 #include <unordered_map>
 
 #define VERSION "0.0.4"
-#define TAG "dev"
+#define TAG "-dev"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -97,8 +97,7 @@ void get_interfaces() {
 }
 
 int main(int argc, char **argv) {
-  argparse::ArgumentParser program("MacroDeck",
-                                   std::string(VERSION) + "-" + TAG,
+  argparse::ArgumentParser program("MacroDeck", std::string(VERSION) + TAG,
                                    argparse::default_arguments::none);
 
   program.add_argument("--list-configs")
@@ -144,21 +143,40 @@ int main(int argc, char **argv) {
 
     if (config.is_array()) {
       for (size_t i = 0; i < config.size(); i++) {
-        if (config[i].contains("name"))
+        if (config[i].contains("name") && config[i]["name"].is_string()) {
           std::cout << i + 1 << ". " << config[i]["name"].get<std::string>()
                     << "\n";
+
+          if (config[i].contains("buttons") &&
+              config[i]["buttons"].is_array()) {
+            for (const auto &button : config[i]["buttons"]) {
+              if (button.contains("macro") && button["macro"].is_string()) {
+                std::cout << "  - " << button["macro"].get<std::string>()
+                          << "\n";
+              }
+            }
+          }
+        }
       }
       std::cout.flush();
     } else {
-      if (config.contains("name")) {
+      if (config.contains("name") && config["name"].is_string()) {
         std::cout << "1. " << config["name"].get<std::string>() << std::endl;
+
+        if (config.contains("buttons") && config["buttons"].is_array()) {
+          for (const auto &button : config["buttons"]) {
+            if (button.contains("macro") && button["macro"].is_string()) {
+              std::cout << "  - " << button["macro"].get<std::string>() << "\n";
+            }
+          }
+        }
       }
     }
     should_exit = true;
   }
 
   if (program["--version"] == true) {
-    std::cout << "MacroDeck version " << VERSION << "-" << TAG << std::endl;
+    std::cout << "MacroDeck version " << VERSION << TAG << std::endl;
     should_exit = true;
   }
 
