@@ -289,6 +289,13 @@ int main(int argc, char **argv) {
   crow::SimpleApp app;
 
   CROW_WEBSOCKET_ROUTE(app, "/ws")
+      .onaccept([&](const crow::request &req, void **) {
+        std::string user_agent = req.get_header_value("User-Agent");
+        log("User agent: " + user_agent);
+
+        return true;
+      })
+
       .onopen([&](crow::websocket::connection &conn) {
         std::lock_guard<std::mutex> lock(auth_mutex);
         if (password.empty()) {

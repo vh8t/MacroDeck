@@ -1,7 +1,6 @@
 #include "apps.hpp"
 #include "log.hpp"
 
-#include <boost/asio/detail/std_fenced_block.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
