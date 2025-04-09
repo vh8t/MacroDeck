@@ -16,7 +16,6 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(ALSA REQUIRED alsa)
-pkg_check_modules(SDL2 REQUIRED sdl2)
 
 file(GLOB SOURCES "src/*.cpp")
 
@@ -35,9 +34,5 @@ message(STATUS "${PROJECT_NAME} version: ${PROJECT_FULL_VERSION}")
 target_include_directories(MacroPad PRIVATE ${ALSA_INCLUDE_DIRS})
 target_link_libraries(MacroPad PRIVATE ${ALSA_LIBRARIES})
 target_compile_options(MacroPad PRIVATE ${ALSA_CFLAGS_OTHER})
-
-target_include_directories(MacroPad PRIVATE ${SDL2_INCLUDE_DIRS})
-target_link_libraries(MacroPad PRIVATE ${SDL2_LIBRARIES})
-target_compile_options(MacroPad PRIVATE ${SDL2_CFLAGS_OTHER})
 
 # install(TARGETS MacroPad DESTINATION bin)
