@@ -262,13 +262,12 @@ Key char_to_keycode(char c) {
   return {-1, false};
 }
 
-void emit(uint16_t type, uint16_t code, int32_t value) {
+void kb_emit(uint16_t type, uint16_t code, int32_t value) {
   struct input_event ie{};
   ie.type = type;
   ie.code = code;
   ie.value = value;
-  ie.time.tv_sec = 0;
-  ie.time.tv_usec = 0;
+  gettimeofday(&ie.time, nullptr);
   write(keyboard, &ie, sizeof(ie));
 }
 
@@ -287,32 +286,45 @@ void init_keyboard() {
 
   struct uinput_setup usetup{};
   memset(&usetup, 0, sizeof(usetup));
+  strcpy(usetup.name, "MacroDeck Keyboard");
+
   usetup.id.bustype = BUS_USB;
   usetup.id.vendor = 0x1234;
   usetup.id.product = 0x5678;
-  strcpy(usetup.name, "MacroDeck Keyboard");
 
-  ioctl(keyboard, UI_DEV_SETUP, &usetup);
-  ioctl(keyboard, UI_DEV_CREATE);
+  if (ioctl(keyboard, UI_DEV_SETUP, &usetup) < 0) {
+    error("Failed to setup keyboard");
+    close(keyboard);
+    keyboard = -1;
+    return;
+  }
+
+  if (ioctl(keyboard, UI_DEV_CREATE) < 0) {
+    error("Failed to create keyboard");
+    close(keyboard);
+    keyboard = -1;
+    return;
+  }
 
   sleep(1);
 }
 
 void clean_keyboard() {
-  if (keyboard < 0) {
+  if (keyboard >= 0) {
     ioctl(keyboard, UI_DEV_DESTROY);
     close(keyboard);
+    keyboard = -1;
   }
 }
 
 void press_key(uint16_t code) {
-  emit(EV_KEY, code, 1);
-  emit(EV_SYN, SYN_REPORT, 0);
+  kb_emit(EV_KEY, code, 1);
+  kb_emit(EV_SYN, SYN_REPORT, 0);
 }
 
 void release_key(uint16_t code) {
-  emit(EV_KEY, code, 0);
-  emit(EV_SYN, SYN_REPORT, 0);
+  kb_emit(EV_KEY, code, 0);
+  kb_emit(EV_SYN, SYN_REPORT, 0);
 }
 
 void key_press(const std::string &combination) {

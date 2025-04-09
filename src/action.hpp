@@ -36,14 +36,14 @@ struct Action {
     return false;
   }
 
-  int i(uint index) const {
+  int get_int(uint index) const {
     if (index < args.size()) {
       return std::get<int>(args[index]);
     }
     return 0;
   }
 
-  std::string s(uint index) const {
+  std::string get_string(uint index) const {
     if (index < args.size()) {
       return std::get<std::string>(args[index]);
     }
@@ -67,73 +67,73 @@ struct Action {
           error("Invalid argument for APP_OPEN");
           return;
         }
-        app_args.push_back(s(i));
+        app_args.push_back(get_string(i));
       }
 
-      app_open(s(0), app_args);
+      app_open(get_string(0), app_args);
     } break;
     case APP_CLOSE: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for APP_CLOSE");
         return;
       }
-      app_close(s(0));
+      app_close(get_string(0));
     } break;
     case APP_SWITCH: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for APP_SWITCH");
         return;
       }
-      app_switch(s(0));
+      app_switch(get_string(0));
     } break;
     case KEY_PRESS: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for KEY_PRESS");
         return;
       }
-      key_press(s(0));
+      key_press(get_string(0));
     } break;
     case KEY_RELEASE: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for KEY_RELEASE");
         return;
       }
-      key_release(s(0));
+      key_release(get_string(0));
     } break;
     case KEY_CLICK: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for KEY_CLICK");
         return;
       }
-      key_click(s(0));
+      key_click(get_string(0));
     } break;
     case KEY_TYPE: {
       if (args.size() != 1 || is_int(0)) {
         error("Invalid argument for KEY_TYPE");
         return;
       }
-      key_type(s(0));
+      key_type(get_string(0));
     } break;
     case VOLUME_INC: {
       if (args.size() != 1 || is_str(0)) {
         error("Invalid argument for VOLUME_INC");
         return;
       }
-      volume_inc(i(0));
+      volume_inc(get_int(0));
     } break;
     case VOLUME_DEC: {
       if (args.size() != 1 || is_str(0)) {
         error("Invalid argument for VOLUME_DEC");
         return;
       }
-      volume_dec(i(0));
+      volume_dec(get_int(0));
     } break;
     case VOLUME_SET: {
       if (args.size() != 1 || is_str(0)) {
         error("Invalid argument for VOLUME_SET");
         return;
       }
-      volume_set(i(0));
+      volume_set(get_int(0));
     } break;
     case VOLUME_MUTE: {
       if (args.size() != 0) {
@@ -161,7 +161,7 @@ struct Action {
         error("Invalid argument for WAIT");
         return;
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(i(0)));
+      std::this_thread::sleep_for(std::chrono::milliseconds(get_int(0)));
     } break;
     case APP_OPEN_IF_CLOSED:
     case APP_CLOSE_IF_OPEN:
