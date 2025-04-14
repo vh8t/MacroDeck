@@ -117,6 +117,10 @@ Key char_to_keycode(char c) {
     return {KEY_LEFTBRACE, false};
   case ']':
     return {KEY_RIGHTBRACE, false};
+  case ';':
+    return {KEY_SEMICOLON, false};
+  case ':':
+    return {KEY_SEMICOLON, true};
   case '"':
     return {KEY_APOSTROPHE, true};
   case '\'':

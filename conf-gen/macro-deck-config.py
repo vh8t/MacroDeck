@@ -438,6 +438,8 @@ class ConfigSaveDialog(wx.Dialog):
         sizer.Add(delete_btn, 0, wx.ALL | wx.CENTER, 5)
 
         panel.SetSizer(sizer)
+        sizer.Fit(self)
+        self.Layout()
 
     def on_choice(self, choice):
         self.choice = choice
@@ -468,6 +470,8 @@ class RemoveMacroDialog(wx.Dialog):
         sizer.Add(delete_btn, 0, wx.ALL | wx.CENTER, 5)
 
         self.panel.SetSizer(sizer)
+        sizer.Fit(self)
+        self.Layout()
 
     def on_choice(self, choice):
         self.choice = choice
@@ -562,6 +566,8 @@ class MacroDialog(wx.Dialog):
         sizer.Add(submit_btn, 0, wx.ALL | wx.CENTER, 15)
 
         self.panel.SetSizer(sizer)
+        sizer.Fit(self)
+        self.Layout()
 
     def on_submit(self, event):
         macro = self.macro_input.GetValue()
@@ -687,6 +693,8 @@ class MainWindow(wx.Frame):
         main_sizer.Add(submit_btn, 0, wx.EXPAND | wx.ALL, 10)
 
         self.panel.SetSizer(main_sizer)
+        main_sizer.Fit(self)
+        self.Layout()
 
     def on_open_dialog_rem(self, event):
         if len(self.config["buttons"]) == 0:

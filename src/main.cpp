@@ -1,3 +1,4 @@
+#include <atomic>
 #define CROW_USE_BOOST 1
 
 #include "argparse.hpp"
@@ -288,19 +289,26 @@ int main(int argc, char **argv) {
 
   crow::SimpleApp app;
 
+  bool accept = false;
+
   CROW_WEBSOCKET_ROUTE(app, "/ws")
       .onaccept([&](const crow::request &req, void **) {
         std::string user_agent = req.get_header_value("User-Agent");
         log("User agent: " + user_agent);
+        if (user_agent.find("Python/") != std::string::npos &&
+            user_agent.find("websockets/") != std::string::npos) {
+          accept = true;
+        }
 
         return true;
       })
 
       .onopen([&](crow::websocket::connection &conn) {
         std::lock_guard<std::mutex> lock(auth_mutex);
-        if (password.empty()) {
+        if (password.empty() || accept) {
           authenticated_devices[&conn] = true;
           conn.send_text("auth-not-required");
+          accept = false;
         } else {
           authenticated_devices[&conn] = false;
           conn.send_text("auth-required");
