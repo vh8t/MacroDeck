@@ -7,11 +7,8 @@ enum Opcode {
 
   // Application Control
   APP_OPEN,
-  APP_OPEN_IF_CLOSED,
   APP_CLOSE,
-  APP_CLOSE_IF_OPEN,
   APP_SWITCH,
-  APP_SWITCH_IF_OPEN,
 
   // Keyboard Actions
   KEY_PRESS,
@@ -26,6 +23,14 @@ enum Opcode {
   VOLUME_MUTE,
   VOLUME_UNMUTE,
   VOLUME_TOGGLE,
+
+  // Capture Control
+  CAPTURE_INC,
+  CAPTURE_DEC,
+  CAPTURE_SET,
+  CAPTURE_MUTE,
+  CAPTURE_UNMUTE,
+  CAPTURE_TOGGLE,
 
   WAIT,
 };

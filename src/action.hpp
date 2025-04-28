@@ -156,6 +156,48 @@ struct Action {
       }
       volume_toggle();
     } break;
+    case CAPTURE_INC: {
+      if (args.size() != 1 || is_str(0)) {
+        error("Invalid argument for CAPTURE_INC");
+        return;
+      }
+      capture_inc(get_int(0));
+    } break;
+    case CAPTURE_DEC: {
+      if (args.size() != 1 || is_str(0)) {
+        error("Invalid argument for CAPTURE_DEC");
+        return;
+      }
+      capture_dec(get_int(0));
+    } break;
+    case CAPTURE_SET: {
+      if (args.size() != 1 || is_str(0)) {
+        error("Invalid argument for CAPTURE_SET");
+        return;
+      }
+      capture_set(get_int(0));
+    } break;
+    case CAPTURE_MUTE: {
+      if (args.size() != 0) {
+        error("Invalid argument for CAPTURE_MUTE");
+        return;
+      }
+      capture_mute();
+    } break;
+    case CAPTURE_UNMUTE: {
+      if (args.size() != 0) {
+        error("Invalid argument for CAPTURE_MUTE");
+        return;
+      }
+      capture_unmute();
+    } break;
+    case CAPTURE_TOGGLE: {
+      if (args.size() != 0) {
+        error("Invalid argument for CAPTURE_MUTE");
+        return;
+      }
+      capture_toggle();
+    } break;
     case WAIT: {
       if (args.size() != 1 || is_str(0)) {
         error("Invalid argument for WAIT");
@@ -163,10 +205,6 @@ struct Action {
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(get_int(0)));
     } break;
-    case APP_OPEN_IF_CLOSED:
-    case APP_CLOSE_IF_OPEN:
-    case APP_SWITCH_IF_OPEN:
-      break;
     }
   };
 };

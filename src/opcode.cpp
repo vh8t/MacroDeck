@@ -4,16 +4,10 @@
 Opcode str_to_op(const std::string &str) {
   if (str == "app_open")
     return APP_OPEN;
-  if (str == "app_open_if_closed")
-    return APP_OPEN_IF_CLOSED;
   if (str == "app_close")
     return APP_CLOSE;
-  if (str == "app_close_if_open")
-    return APP_CLOSE_IF_OPEN;
   if (str == "app_switch")
     return APP_SWITCH;
-  if (str == "app_switch_if_open")
-    return APP_SWITCH_IF_OPEN;
   if (str == "key_press")
     return KEY_PRESS;
   if (str == "key_release")
@@ -34,6 +28,18 @@ Opcode str_to_op(const std::string &str) {
     return VOLUME_UNMUTE;
   if (str == "volume_toggle")
     return VOLUME_TOGGLE;
+  if (str == "capture_inc")
+    return CAPTURE_INC;
+  if (str == "capture_dec")
+    return CAPTURE_DEC;
+  if (str == "capture_set")
+    return CAPTURE_SET;
+  if (str == "capture_mute")
+    return CAPTURE_MUTE;
+  if (str == "capture_unmute")
+    return CAPTURE_UNMUTE;
+  if (str == "capture_toggle")
+    return CAPTURE_TOGGLE;
   if (str == "wait")
     return WAIT;
   warning("Unknown action: " + str);

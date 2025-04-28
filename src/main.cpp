@@ -1,4 +1,3 @@
-#include <atomic>
 #define CROW_USE_BOOST 1
 
 #include "argparse.hpp"
@@ -24,6 +23,7 @@
 #include <string>
 #include <sys/types.h>
 #include <unordered_map>
+#include <unordered_set>
 
 #define VERSION "0.0.4"
 #define TAG "-dev"
@@ -35,6 +35,7 @@ std::unordered_map<std::string, Macro *> loaded_macros;
 std::vector<std::array<std::string, 2>> icons;
 
 std::unordered_map<crow::websocket::connection *, bool> authenticated_devices;
+std::unordered_set<crow::websocket::connection *> elevated;
 std::mutex auth_mutex;
 
 std::string get_base_dir() {
@@ -44,6 +45,7 @@ std::string get_base_dir() {
 
 void setup() {
   log("Initializing master volume control");
+  log("Initializing master capture control");
   init_alsa();
   log("Initializing virtual keyboard");
   init_keyboard();
@@ -52,6 +54,7 @@ void setup() {
 void cleanup() {
   std::cout << "\n";
   log("Cleaning master volume control");
+  log("Cleaning master capture control");
   clean_alsa();
   log("Cleaning virtual keyboard");
   clean_keyboard();
@@ -306,6 +309,10 @@ int main(int argc, char **argv) {
       .onopen([&](crow::websocket::connection &conn) {
         std::lock_guard<std::mutex> lock(auth_mutex);
         if (password.empty() || accept) {
+          if (accept) {
+            elevated.insert(&conn);
+          }
+
           authenticated_devices[&conn] = true;
           conn.send_text("auth-not-required");
           accept = false;
@@ -333,6 +340,36 @@ int main(int argc, char **argv) {
             if (data == "get-config") {
               std::string jsonString = config.dump();
               conn.send_text("config:" + jsonString);
+            } else if (data == "inc-volume") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running inc-volume");
+                volume_inc(5);
+              }
+            } else if (data == "dec-volume") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running dec-volume");
+                volume_dec(5);
+              }
+            } else if (data == "tog-volume") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running tog-volume");
+                volume_toggle();
+              }
+            } else if (data == "inc-capture") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running inc-capture");
+                capture_inc(5);
+              }
+            } else if (data == "dec-capture") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running dec-capture");
+                capture_dec(5);
+              }
+            } else if (data == "tog-capture") {
+              if (elevated.find(&conn) != elevated.end()) {
+                log("running tog-capture");
+                capture_toggle();
+              }
             } else if (data.length() > 10 &&
                        data.substr(0, 10) == "run-macro:") {
               std::string macro_name = data.substr(10);
