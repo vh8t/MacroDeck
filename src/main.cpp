@@ -460,10 +460,10 @@ int main(int argc, char **argv) {
   });
 
   get_interfaces();
-  info("App ready on port 5000");
+  info("App ready on port 7299");
 
   if (program["--verbose"] != true)
     app.loglevel(crow::LogLevel::Warning);
 
-  app.port(5000).multithreaded().run();
+  app.port(7299).multithreaded().run();
 }
